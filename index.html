@@ -2390,9 +2390,11 @@
             border-bottom: none;
         }
         #char-balance-app-page .transactions-list .amount {
-            color: var(--wechat-red);
             font-weight: 500;
         }
+        #char-balance-app-page .transactions-list .amount.income { color: var(--wechat-green); }
+        #char-balance-app-page .transactions-list .amount.expense { color: var(--wechat-red); }
+
         body.dark-mode #char-balance-app-page .balance-card { background: #1E1E1E; }
         body.dark-mode #char-balance-app-page .balance-item { background: #2c2c2c; }
         body.dark-mode #char-balance-app-page .balance-item .title { color: #8E8E93; }
@@ -2587,7 +2589,7 @@
             <div class="notification-center" id="notification-center">
                 <div class="notification-header">
                     <h3>通知中心</h3>
-                    <button class="back-btn" onclick="toggleNotificationCenter(event)">返回</button>
+                    <button class="back-btn" onclick="toggleNotificationCenter(event, true)">返回</button>
                 </div>
                 <div id="notification-list"></div>
                 <div class="notification-footer">
@@ -2778,7 +2780,7 @@
     <script>
         // ========== 通用数据管理器 (IndexedDB) ==========
         class UniversalDataManager {
-            constructor(dbName = 'WeChatSimulatorDB_v59', storeName = 'appDataStore') { // ★★★ Version bump to 59
+            constructor(dbName = 'WeChatSimulatorDB_v61', storeName = 'appDataStore') { // ★★★ Version bump to 61
                 this.dbName = dbName;
                 this.storeName = storeName;
                 this.db = null;
@@ -2938,7 +2940,7 @@
                 currentEditingNoteId: null
             },
             notifications: [],
-            certificates: { // ★★★ 新增
+            certificates: {
                 idCards: [],
                 marriageCerts: [],
                 marriageStamp: '中华人民共和国民政部'
@@ -2952,7 +2954,7 @@
                 beautify: {
                     phoneFrame: 'black', theme: 'normal', chatBackground: '',
                     userAvatarFrame: '', charAvatarFrame: '', avatarShape: 'rounded',
-                    bubbleCss: ``, // ★★★ 优化：默认空，由getBubbleStyleCss提供
+                    bubbleCss: ``,
                     activeBubbleStyle: 'wechat',
                     redPacketBubbleCss: '',
                     transferBubbleCss: '',
@@ -3070,7 +3072,7 @@
                 locationP3: { enabled: true, name: '我的位置', image: 'https://source.unsplash.com/random/200x150?map' }
             },
             activeChat: { id: null, type: null },
-            version: '59.0' // ★★★ Version bump to 59
+            version: '61.0' // ★★★ Version bump to 61
         };
 
         async function loadData() {
@@ -3079,7 +3081,7 @@
                 appData = savedData ? savedData : JSON.parse(JSON.stringify(defaultAppData));
                 
                 // 功能检查防火墙: 数据迁移与验证
-                if (!appData.version || parseFloat(appData.version) < 59.0) {
+                if (!appData.version || parseFloat(appData.version) < 61.0) {
                     // ★★★ 新增迁移逻辑 ★★★
                     if (!appData.certificates) {
                         appData.certificates = { idCards: [], marriageCerts: [], marriageStamp: '中华人民共和国民政部' };
@@ -3103,6 +3105,9 @@
                             appData.settings.beautify.readReceipt.charEnabled = true;
                         }
                     }
+                    if (!appData.games.guessWord) {
+                        appData.games.guessWord = defaultAppData.games.guessWord;
+                    }
                     appData.groups.forEach(g => {
                         if (!g.groupTitles) g.groupTitles = {};
                         if (!g.levelTitles) g.levelTitles = { '0-10': '萌新', '11-20': '话痨', '21-30': '吐槽役', '31-50': '大佬', '51-80': '元老', '81-100': '活化石' };
@@ -3114,7 +3119,7 @@
                         }
                     });
                     
-                    appData.version = '59.0';
+                    appData.version = '61.0';
                     await saveData();
                 }
 
@@ -4406,7 +4411,7 @@
                 let readReceiptHtml = ''; // ★★★ 新增：已读回执
 
                 if (chatType === 'group' && !isSent) {
-                    const member = chat.members.find(m => m.id == msg.sender);
+                    const member = group.members.find(m => m.id == msg.sender);
                     if (member) {
                         const memberTitle = group.groupTitles?.[member.id] || group.levelTitles?.[getMemberLevelRange(group.groupTitles?.[member.id]?.level)];
                         let titleBadge = '';
@@ -6561,7 +6566,7 @@
                 currentChat = appData.groups.find(g => g.id === groupId);
                 if (currentChat) {
                     if (appData.settings.memoryInterflow) {
-                        // 合并私聊和群聊记录
+                        // 合并私聊记录
                         const privateHistory = contact.conversation || [];
                         const groupHistory = currentChat.conversation || [];
                         chatHistory = [...privateHistory, ...groupHistory].sort((a, b) => a.timestamp - b.timestamp);
@@ -6577,7 +6582,7 @@
 
             const boundPersonaId = contact?.boundPersonaId;
             const userPersona = boundPersonaId ? appData.user.personas.find(p => p.id === boundPersonaId) : appData.user;
-            const userPersonaPrompt = userPersona ? `\n\n【对话者'${userPersona.name}'的人设】\n${userPersona.description || ''}` : `\n\n【对话者'${appData.user.nickname}''s的人设】\n无`;
+            const userPersonaPrompt = userPersona ? `\n\n【对话者'${userPersona.name || userPersona.nickname}'的人设】\n${userPersona.description || ''}` : `\n\n【对话者'${appData.user.nickname}''s的人设】\n无`;
 
             const relevantHistory = (chatHistory || [])
                 .filter(m => m.type !== 'typing' && !m.isRecalled)
@@ -8796,15 +8801,43 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             reader.readAsDataURL(file);
         }
 
+        // ★★★ 优化：音乐分享功能 ★★★
         function forwardMusic(songId) {
             const song = appData.music.library.find(s => s.id === songId);
             if (!song) return;
-            const activeChat = appData.activeChat;
-            if (activeChat.id) {
-                sendMessage(activeChat.id, activeChat.type, { id: song.id, title: song.title, artist: song.artist, cover: song.cover }, 'music', 'wechat');
-                showToast('音乐已分享到当前聊天');
-            } else {
-                showToast('请先进入一个聊天', 'error');
+
+            const modalId = 'forward-music-modal';
+            const contactsHtml = appData.contacts.map(c => `
+                <div class="list-item" onclick="confirmMusicForward('${c.id}', 'individual', ${songId})">
+                    <img src="${c.avatar}" class="avatar">
+                    <div class="details"><span class="name">${c.remark || c.name}</span></div>
+                </div>
+            `).join('');
+            const groupsHtml = appData.groups.map(g => `
+                <div class="list-item" onclick="confirmMusicForward('${g.id}', 'group', ${songId})">
+                    <img src="${g.avatar || 'https://img.js.design/assets/img/65a881fa383e6a42242a3f33.jpg'}" class="avatar">
+                    <div class="details"><span class="name">${g.name}</span></div>
+                </div>
+            `).join('');
+
+            const html = `
+                <div class="modal-content">
+                    <div class="modal-title">分享音乐给...</div>
+                    <div class="list-view" style="max-height: 60vh; overflow-y: auto; background: transparent;">
+                        ${contactsHtml}
+                        ${groupsHtml}
+                    </div>
+                </div>
+            `;
+            showModal(modalId, html);
+        }
+
+        function confirmMusicForward(chatId, chatType, songId) {
+            const song = appData.music.library.find(s => s.id === songId);
+            if (song) {
+                sendMessage(chatId, chatType, { id: song.id, title: song.title, artist: song.artist, cover: song.cover }, 'music', 'wechat');
+                showToast('音乐已分享');
+                closeModal('forward-music-modal');
             }
         }
 
@@ -9403,7 +9436,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             document.getElementById('confirm-add-card-btn').onclick = () => {
                 const bankName = document.getElementById('bank-name-input').value.trim();
                 const bankNumber = document.getElementById('bank-number-input').value.trim();
-                if (!bankName) { showToast('银行名称不能为空', 'error'); return; }
+                               if (!bankName) { showToast('银行名称不能为空', 'error'); return; }
                 if (!/^\d{16}$/.test(bankNumber)) { showToast('请输入16位有效银行卡号', 'error'); return; }
 
                 appData.user.bankCards.push({
@@ -9683,19 +9716,38 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
         function renderCharBalanceAppPage(container) {
             if (!container) return;
             const contacts = appData.contacts;
+            let charOptions = contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
             container.innerHTML = `
                 <div class="wechat-header">
                     <div class="header-left header-back-btn" onclick="goBack()"><div class="ui-icon back"></div></div>
                     <span class="header-title">对方余额</span>
+                    <div class="header-right" onclick="refreshCharBalance()"><i class="fas fa-sync-alt"></i></div>
                 </div>
-                <div class="content-area" id="char-balance-content">
-                    <div class="loader-container"><div class="loader"></div></div>
+                <div class="content-area" style="padding: 20px;">
+                    <div class="form-group">
+                        <label>选择要查询的角色</label>
+                        <select id="char-balance-select" class="form-input">${charOptions}</select>
+                    </div>
+                    <div id="char-balance-content">
+                        ${contacts.length > 0 ? '' : '<p style="text-align:center; padding:50px; color:var(--wechat-text-secondary);">暂无好友</p>'}
+                    </div>
                 </div>
             `;
-            if (contacts.length > 0) {
-                showCharBalanceDetails(contacts[0].id); // 默认显示第一个好友
-            } else {
-                document.getElementById('char-balance-content').innerHTML = '<p style="text-align:center; padding:50px; color:var(--wechat-text-secondary);">暂无好友</p>';
+
+            const selectEl = document.getElementById('char-balance-select');
+            if (selectEl) {
+                selectEl.onchange = (e) => showCharBalanceDetails(e.target.value);
+                if (contacts.length > 0) {
+                    showCharBalanceDetails(contacts[0].id);
+                }
+            }
+        }
+
+        function refreshCharBalance() {
+            const selectEl = document.getElementById('char-balance-select');
+            if (selectEl && selectEl.value) {
+                showCharBalanceDetails(selectEl.value);
             }
         }
 
@@ -9706,22 +9758,24 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             
             const contact = appData.contacts.find(c => c.id == charId);
             try {
-                const prompt = `根据角色设定：【${contact.persona}】，请你生成该角色的财务状况，必须严格遵循以下JSON格式，不要添加任何额外解释：
+                const prompt = `请为角色“${contact.name}”生成一份详细的财务状况报告，严格遵循以下JSON格式，不要添加任何额外解释。人设参考：【${contact.persona}】
                 {
-                  "bank_balance": "银行卡余额(数字)",
-                  "wallet_balance": "钱包余额(数字)",
+                  "bank_balance": "银行卡总余额(数字)",
+                  "wechat_balance": "微信钱包余额(数字)",
                   "alipay_balance": "支付宝余额(数字)",
-                  "recent_expenses": [
-                    {"item": "支出项目1", "amount": "金额(数字)", "date": "YYYY-MM-DD"},
-                    {"item": "支出项目2", "amount": "金额(数字)", "date": "YYYY-MM-DD"},
-                    {"item": "支出项目3", "amount": "金额(数字)", "date": "YYYY-MM-DD"}
+                  "qq_balance": "QQ钱包余额(数字)",
+                  "net_worth": "个人总身家(数字)",
+                  "recent_transactions": [
+                    {"item": "项目1", "amount": "金额(数字)", "type": "income/expense", "date": "YYYY-MM-DD"},
+                    {"item": "项目2", "amount": "金额(数字)", "type": "income/expense", "date": "YYYY-MM-DD"},
+                    {"item": "项目3", "amount": "金额(数字)", "type": "income/expense", "date": "YYYY-MM-DD"}
                   ]
                 }`;
                 const balanceDataStr = (await getAiReply(charId, 'wechat', prompt))[0];
                 let balanceData;
                 try {
                     balanceData = JSON.parse(balanceDataStr);
-                    if (typeof balanceData.bank_balance === 'undefined' || !Array.isArray(balanceData.recent_expenses)) {
+                    if (typeof balanceData.bank_balance === 'undefined' || !Array.isArray(balanceData.recent_transactions)) {
                         throw new Error("API返回的JSON结构不符合预期。");
                     }
                 } catch (e) {
@@ -9741,25 +9795,35 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                                 <div class="amount">${formatCurrency(balanceData.bank_balance, 'CNY')}</div>
                             </div>
                             <div class="balance-item">
-                                <div class="title">钱包余额</div>
-                                <div class="amount">${formatCurrency(balanceData.wallet_balance, 'CNY')}</div>
+                                <div class="title">微信余额</div>
+                                <div class="amount">${formatCurrency(balanceData.wechat_balance, 'CNY')}</div>
                             </div>
                             <div class="balance-item">
                                 <div class="title">支付宝余额</div>
                                 <div class="amount">${formatCurrency(balanceData.alipay_balance, 'CNY')}</div>
                             </div>
+                            <div class="balance-item">
+                                <div class="title">QQ钱包余额</div>
+                                <div class="amount">${formatCurrency(balanceData.qq_balance, 'CNY')}</div>
+                            </div>
+                        </div>
+                        <div class="balance-item" style="margin-top: 15px; background: #e8f5e9;">
+                            <div class="title">个人总身家</div>
+                            <div class="amount" style="color: #2e7d32;">${formatCurrency(balanceData.net_worth, 'CNY')}</div>
                         </div>
                     </div>
                     <div class="balance-card">
-                        <h3>最近开销</h3>
+                        <h3>最近收支明细</h3>
                         <div class="list-view transactions-list">
-                            ${balanceData.recent_expenses.map(item => `
+                            ${balanceData.recent_transactions.map(item => `
                                 <div class="list-item">
                                     <div class="details">
                                         <span class="name">${item.item}</span>
                                         <p class="subtext">${item.date}</p>
                                     </div>
-                                    <div class="info amount">-${formatCurrency(item.amount, 'CNY')}</div>
+                                    <div class="info amount ${item.type}">
+                                        ${item.type === 'income' ? '+' : '-'}${formatCurrency(item.amount, 'CNY')}
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -10569,7 +10633,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 });
             });
 
-            document.getElementById('status-bar').addEventListener('click', toggleNotificationCenter);
+            document.getElementById('status-bar').addEventListener('click', (e) => toggleNotificationCenter(e, false));
             
             checkAndPostCharMoments();
             if (appData.settings.backgroundInteraction.enabled) startBackgroundInteraction();
@@ -10673,10 +10737,13 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
         }
 
         // ★★★ 优化：通知栏交互 ★★★
-        function toggleNotificationCenter(event) {
+        function toggleNotificationCenter(event, forceClose = false) {
             const nc = document.getElementById('notification-center');
+            if (forceClose) {
+                nc.classList.remove('visible');
+                return;
+            }
             if (event.target.closest('.back-btn') || event.target.closest('.clear-all-btn')) {
-                // 如果点击的是返回或清除按钮，则不切换显示状态，仅执行对应功能
                 return;
             }
             nc.classList.toggle('visible');
@@ -11104,6 +11171,14 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     <div class="list-item" onclick="showGuessWordSetup()">
                         <div class="details"><span class="name">你说我猜</span></div>
                         <i class="fas fa-chevron-right chevron"></i>
+                    </div>
+                    <div class="list-item" onclick="showToast('五子棋开发中...')">
+                        <div class="details"><span class="name">五子棋</span></div>
+                        <span class="info">开发中</span>
+                    </div>
+                    <div class="list-item" onclick="showToast('庄家二十一点开发中...')">
+                        <div class="details"><span class="name">庄家二十一点</span></div>
+                        <span class="info">开发中</span>
                     </div>
                     <div class="list-item" onclick="showToast('大富翁开发中...')">
                         <div class="details"><span class="name">大富翁</span></div>
@@ -12467,7 +12542,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 reader.readAsDataURL(file);
             } else if (url) {
                 settings.fontUrl = url;
-                settings.fontFile = null;
+settings.fontFile = null;
                 settings.fontFamily = `BookshelfCustomFont_${Date.now()}`;
                 saveData(true);
                 applyBookshelfReadingSettings();
@@ -12826,23 +12901,49 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                         <label>选择角色</label>
                         <select id="cert-char-select" class="form-input">${charOptions}</select>
                     </div>
-                    <button class="form-btn" onclick="generateIdCard()">生成身份证</button>
+                    <button class="form-btn" onclick="generateIdCard('char')">生成身份证</button>
                     <div id="id-card-display" class="certificate-display"></div>
                 </div>
             `;
         }
 
         function renderMyCertsTab(container) {
-            const personaOptions = appData.user.personas.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            const userCerts = appData.certificates.idCards.filter(c => c.ownerType === 'user');
+            const charCerts = appData.certificates.idCards.filter(c => c.ownerType === 'char');
+            const marriageCerts = appData.certificates.marriageCerts;
+
             container.innerHTML = `
-                <div class="form-page" style="padding: 20px;">
-                    <h3>办理我的身份证</h3>
-                    <div class="form-group">
-                        <label>选择自设</label>
-                        <select id="cert-persona-select" class="form-input">${personaOptions}</select>
+                <div class="app-content">
+                    <h3>我的身份证</h3>
+                    <div class="list-view">
+                        ${userCerts.length > 0 ? userCerts.map(cert => `
+                            <div class="list-item" onclick="displayIdCard(${cert.id}, 'certificate-content-area')">
+                                <img src="${cert.avatar}" class="avatar">
+                                <div class="details"><span class="name">${cert.name}</span></div>
+                            </div>
+                        `).join('') : '<p>暂无我的身份证</p>'}
                     </div>
-                    <button class="form-btn" onclick="generateIdCard('user')">生成我的身份证</button>
-                    <div id="my-id-card-display" class="certificate-display"></div>
+                    <button class="form-btn" onclick="showCreateMyIdCardModal()">新建我的身份证</button>
+                    <div class="list-divider"></div>
+                    <h3>Char的身份证</h3>
+                    <div class="list-view">
+                        ${charCerts.length > 0 ? charCerts.map(cert => `
+                            <div class="list-item" onclick="displayIdCard(${cert.id}, 'certificate-content-area')">
+                                <img src="${cert.avatar}" class="avatar">
+                                <div class="details"><span class="name">${cert.name}</span></div>
+                            </div>
+                        `).join('') : '<p>暂无Char的身份证</p>'}
+                    </div>
+                    <div class="list-divider"></div>
+                    <h3>我的结婚证</h3>
+                    <div class="list-view">
+                        ${marriageCerts.length > 0 ? marriageCerts.map(cert => `
+                            <div class="list-item" onclick="displayMarriageCert(${cert.id}, 'certificate-content-area')">
+                                <i class="fas fa-ring"></i>
+                                <div class="details"><span class="name">${cert.user.name} & ${cert.char.name}</span></div>
+                            </div>
+                        `).join('') : '<p>暂无结婚证</p>'}
+                    </div>
                 </div>
             `;
         }
@@ -12876,18 +12977,24 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             `;
         }
 
-        async function generateIdCard(type = 'char') {
+        async function generateIdCard(type = 'char', personaId = null) {
             const displayId = type === 'user' ? 'my-id-card-display' : 'id-card-display';
             const displayEl = document.getElementById(displayId);
             displayEl.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
 
-            let person, personaId;
+            let person;
+            let personTypeForPrompt;
+            let personIdForPrompt;
+
             if (type === 'user') {
-                personaId = document.getElementById('cert-persona-select').value;
                 person = appData.user.personas.find(p => p.id == personaId);
+                personTypeForPrompt = { name: person.name, gender: person.gender, persona: person.description };
+                personIdForPrompt = person.id;
             } else {
                 const charId = document.getElementById('cert-char-select').value;
                 person = appData.contacts.find(c => c.id == charId);
+                personTypeForPrompt = { name: person.name, gender: person.gender, persona: person.persona };
+                personIdForPrompt = person.id;
             }
 
             if (!person) {
@@ -12897,10 +13004,10 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             try {
                 const prompt = `请为以下角色生成一个逼真的中国居民身份证信息。严格遵循JSON格式，不要添加任何额外解释。
-                角色信息: { "name": "${person.name}", "gender": "${person.gender}", "persona": "${person.persona || person.description}" }
+                角色信息: { "name": "${personTypeForPrompt.name}", "gender": "${personTypeForPrompt.gender}", "persona": "${personTypeForPrompt.persona}" }
                 JSON格式: { "birth_date": "YYYY年M月D日", "ethnicity": "民族", "address": "详细住址", "id_number": "18位身份证号", "issuing_authority": "签发机关", "validity_period": "YYYY.MM.DD-YYYY.MM.DD" }`;
                 
-                const idDataStr = (await getAiReply(person.id, 'wechat', prompt))[0];
+                const idDataStr = (await getAiReply(personIdForPrompt, 'wechat', prompt))[0];
                 const idData = JSON.parse(idDataStr);
 
                 const newIdCard = {
@@ -12915,34 +13022,53 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 appData.certificates.idCards.push(newIdCard);
                 saveData();
 
-                displayEl.innerHTML = `
-                    <div class="id-card" id="id-card-${newIdCard.id}">
-                        <div class="id-bg-pattern"></div>
-                        <div class="id-header"><div class="id-title">居民身份证</div><div class="id-logo">PRC ID</div></div>
-                        <div class="id-content">
-                            <div class="id-photo" style="background-image: url('${person.avatar}')"></div>
-                            <div class="id-info">
-                                <div class="info-item"><div class="info-label">姓名：</div><div class="info-value">${person.name}</div></div>
-                                <div class="info-item"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[person.gender]}</div></div>
-                                <div class="info-item"><div class="info-label">民族：</div><div class="info-value">${idData.ethnicity}</div></div>
-                                <div class="info-item"><div class="info-label">出生：</div><div class="info-value">${idData.birth_date}</div></div>
-                                <div class="info-item"><div class="info-label">住址：</div><div class="info-value">${idData.address}</div></div>
-                            </div>
-                        </div>
-                        <div class="id-footer">
-                            <div class="id-number">${idData.id_number}</div>
-                            <div>公民身份号码</div>
-                        </div>
-                    </div>
-                `;
-                document.getElementById(`id-card-${newIdCard.id}`).addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    // 保存图片逻辑
-                });
+                displayIdCard(newIdCard.id, displayId);
 
             } catch (e) {
                 displayEl.innerHTML = `<p style="color:red;">生成身份证失败: ${e.message}</p>`;
             }
+        }
+
+        function displayIdCard(certId, containerId = 'id-card-display') {
+            const cert = appData.certificates.idCards.find(c => c.id === certId);
+            if (!cert) return;
+            const displayEl = document.getElementById(containerId);
+            displayEl.innerHTML = `
+                <div class="id-card" id="id-card-${cert.id}">
+                    <div class="id-bg-pattern"></div>
+                    <div class="id-header"><div class="id-title">居民身份证</div><div class="id-logo">PRC ID</div></div>
+                    <div class="id-content">
+                        <div class="id-photo" style="background-image: url('${cert.avatar}')"></div>
+                        <div class="id-info">
+                            <div class="info-item"><div class="info-label">姓名：</div><div class="info-value">${cert.name}</div></div>
+                            <div class="info-item"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[cert.gender]}</div></div>
+                            <div class="info-item"><div class="info-label">民族：</div><div class="info-value">${cert.ethnicity}</div></div>
+                            <div class="info-item"><div class="info-label">出生：</div><div class="info-value">${cert.birth_date}</div></div>
+                            <div class="info-item"><div class="info-label">住址：</div><div class="info-value">${cert.address}</div></div>
+                        </div>
+                    </div>
+                    <div class="id-footer">
+                        <div class="id-number">${cert.id_number}</div>
+                        <div>公民身份号码</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showCreateMyIdCardModal() {
+            const modalId = 'create-my-id-modal';
+            const personaOptions = appData.user.personas.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            const html = `
+                <div class="modal-content">
+                    <div class="modal-title">新建我的身份证</div>
+                    <div class="form-group">
+                        <label>选择自设身份</label>
+                        <select id="my-id-persona-select" class="modal-input">${personaOptions}</select>
+                    </div>
+                    <button class="form-btn" onclick="generateIdCard('user', document.getElementById('my-id-persona-select').value); closeModal('${modalId}');">生成</button>
+                </div>
+            `;
+            showModal(modalId, html);
         }
 
         function generateMarriageCert() {
@@ -12951,7 +13077,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             const userId = document.getElementById('marriage-user-select').value;
             const charId = document.getElementById('marriage-char-select').value;
-            const user = appData.user.personas.find(p => p.id == userId);
+            const userPersona = appData.user.personas.find(p => p.id == userId);
             const char = appData.contacts.find(c => c.id == charId);
             const stampText = document.getElementById('marriage-stamp-input').value;
             const photoInput = document.getElementById('marriage-photo-input');
@@ -12959,7 +13085,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             const userCard = appData.certificates.idCards.find(c => c.ownerId == userId && c.ownerType === 'user');
             const charCard = appData.certificates.idCards.find(c => c.ownerId == charId && c.ownerType === 'char');
 
-            if (!user || !char) {
+            if (!userPersona || !char) {
                 displayEl.innerHTML = '<p style="color:red;">请选择有效的双方身份。</p>';
                 return;
             }
@@ -12971,8 +13097,8 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             const userAge = new Date().getFullYear() - new Date(userCard.birth_date.replace(/年|月/g, '-').replace('日', '')).getFullYear();
             const charAge = new Date().getFullYear() - new Date(charCard.birth_date.replace(/年|月/g, '-').replace('日', '')).getFullYear();
 
-            if (userAge < 18 || charAge < 18) {
-                displayEl.innerHTML = '<p style="color:red;">双方或其中一方未满18周岁，无法结婚。</p>';
+            if ((userPersona.gender === 'male' && userAge < 22) || (userPersona.gender === 'female' && userAge < 20) || (char.gender === 'male' && charAge < 22) || (char.gender === 'female' && charAge < 20)) {
+                displayEl.innerHTML = '<p style="color:red;">双方或其中一方未达到法定结婚年龄（男22，女20）。</p>';
                 return;
             }
 
@@ -12982,7 +13108,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
                 const newCert = {
                     id: Date.now(),
-                    user: { id: user.id, name: user.name, gender: user.gender, birthDate: userCard.birth_date, idNumber: userCard.id_number },
+                    user: { id: userPersona.id, name: userPersona.name, gender: userPersona.gender, birthDate: userCard.birth_date, idNumber: userCard.id_number },
                     char: { id: char.id, name: char.name, gender: char.gender, birthDate: charCard.birth_date, idNumber: charCard.id_number },
                     photo: photoUrl,
                     stamp: stampText,
@@ -12992,34 +13118,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 appData.certificates.marriageCerts.push(newCert);
                 saveData();
 
-                displayEl.innerHTML = `
-                    <div class="marriage-certificate" style="transform: scale(0.8);">
-                        <div class="heart-decoration">❤</div>
-                        <div class="certificate-left">
-                            <div class="certificate-header">
-                                <div class="certificate-title">结婚证</div>
-                                <div class="certificate-subtitle">MARRIAGE CERTIFICATE</div>
-                                <div class="certificate-number">${certNumber}</div>
-                            </div>
-                            <div class="couple-photo" style="background-image: url('${photoUrl}')"></div>
-                            <div class="marriage-info">
-                                <div class="info-grid"><div class="info-label">${char.gender === 'male' ? '男方' : '女方'}：</div><div class="info-value">${char.name}</div></div>
-                                <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[char.gender]}</div></div>
-                                <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${charCard.birth_date}</div></div>
-                                <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${charCard.id_number}</div></div>
-                                <div class="info-grid" style="margin-top: 20px;"><div class="info-label">${user.gender === 'female' ? '女方' : '男方'}：</div><div class="info-value">${user.name}</div></div>
-                                <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[user.gender]}</div></div>
-                                <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${userCard.birth_date}</div></div>
-                                <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${userCard.id_number}</div></div>
-                            </div>
-                        </div>
-                        <div class="certificate-right">
-                            <div class="marriage-vows">双方自愿申请结婚，经审查，符合《中华人民共和国民法典》关于结婚的规定，准予登记，特发此证。</div>
-                            <div class="registration-date">登记日期：${registrationDate}</div>
-                            <div class="official-stamp"><div class="stamp-content"><span class="stamp-text">婚姻登记专用章</span><span class="stamp-authority">${stampText}</span></div></div>
-                        </div>
-                    </div>
-                `;
+                displayMarriageCert(newCert.id, 'marriage-cert-display');
             };
 
             if (photoInput.files[0]) {
@@ -13027,6 +13126,40 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             } else {
                 handlePhoto('');
             }
+        }
+
+        function displayMarriageCert(certId, containerId) {
+            const cert = appData.certificates.marriageCerts.find(c => c.id === certId);
+            if (!cert) return;
+            const displayEl = document.getElementById(containerId);
+            displayEl.innerHTML = `
+                <div class="marriage-certificate" style="transform: scale(0.8);">
+                    <div class="heart-decoration">❤</div>
+                    <div class="certificate-left">
+                        <div class="certificate-header">
+                            <div class="certificate-title">结婚证</div>
+                            <div class="certificate-subtitle">MARRIAGE CERTIFICATE</div>
+                            <div class="certificate-number">${cert.certNumber}</div>
+                        </div>
+                        <div class="couple-photo" style="background-image: url('${cert.photo}')"></div>
+                        <div class="marriage-info">
+                            <div class="info-grid"><div class="info-label">${cert.char.gender === 'male' ? '男方' : '女方'}：</div><div class="info-value">${cert.char.name}</div></div>
+                            <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[cert.char.gender]}</div></div>
+                            <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${cert.char.birthDate}</div></div>
+                            <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${cert.char.idNumber}</div></div>
+                            <div class="info-grid" style="margin-top: 20px;"><div class="info-label">${cert.user.gender === 'female' ? '女方' : '男方'}：</div><div class="info-value">${cert.user.name}</div></div>
+                            <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[cert.user.gender]}</div></div>
+                            <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${cert.user.birthDate}</div></div>
+                            <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${cert.user.idNumber}</div></div>
+                        </div>
+                    </div>
+                    <div class="certificate-right">
+                        <div class="marriage-vows">双方自愿申请结婚，经审查，符合《中华人民共和国民法典》关于结婚的规定，准予登记，特发此证。</div>
+                        <div class="registration-date">登记日期：${cert.registrationDate}</div>
+                        <div class="official-stamp"><div class="stamp-content"><span class="stamp-text">婚姻登记专用章</span><span class="stamp-authority">${cert.stamp}</span></div></div>
+                    </div>
+                </div>
+            `;
         }
 
         // ★★★ 优化：所有灵动岛逻辑 ★★★

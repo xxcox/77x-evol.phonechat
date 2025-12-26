@@ -307,68 +307,105 @@
 
         body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #333; margin: 0; font-family: var(--user-custom-font); font-size: var(--font-size-base); font-weight: var(--global-font-weight); font-style: var(--global-font-style); overflow: hidden; }
 
-        /* --- 加载动画 --- */
-        #loading-screen {
+        /* ★★★ 优化：激活与加载弹窗 ★★★ */
+        .popup-overlay {
             position: fixed;
             inset: 0;
-            z-index: 10000;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, rgba(240, 240, 240, 0.7), rgba(220, 220, 220, 0.8));
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            color: #333;
-            font-family: sans-serif;
+            z-index: 10000;
+            transition: opacity 0.3s ease;
         }
-        .loading-content {
-            position: relative;
+        .popup-content {
+            background: #FFFFFF;
+            border-radius: 20px;
+            width: 320px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             text-align: center;
-            width: 300px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            animation: popup-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .loading-text-center {
-            font-size: 32px;
-            font-weight: bold;
+        @keyframes popup-fade-in {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #activation-modal .popup-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            background-color: #0099FF;
+            -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3e%3c/svg%3e");
+            mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3e%3c/svg%3e");
+            display: inline-block;
+        }
+        #activation-modal h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        #activation-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            box-sizing: border-box;
             margin-bottom: 20px;
         }
-        .loading-spinner {
+        #activation-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #0099FF;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #activation-btn:hover { background: #0088e6; }
+        #loading-screen .loading-spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid rgba(51, 51, 51, 0.2);
-            border-top-color: #333;
+            border: 5px solid rgba(0, 153, 255, 0.2);
+            border-top-color: #0099FF;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 20px auto;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: rgba(51, 51, 51, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
+        #loading-screen .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
         }
-        .progress-bar {
+        #loading-screen .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(0, 153, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        #loading-screen .progress-bar {
             width: 0%;
             height: 100%;
-            background-color: #333;
-            border-radius: 4px;
+            background-color: #0099FF;
+            border-radius: 3px;
             transition: width 0.2s ease-out;
         }
-        .loading-text-top-left {
-            position: absolute;
-            top: -100px;
-            left: 0;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        .loading-text-bottom-right {
-            position: absolute;
-            bottom: -100px;
-            right: 0;
+        #loading-screen .loading-subtext {
             font-size: 12px;
-            text-align: right;
-            opacity: 0.7;
+            color: #999;
+            margin-top: 15px;
         }
 
         /* --- 手机外壳 --- */
@@ -559,23 +596,113 @@
         }
         .battery-percent-outside { font-size: 12px; display: var(--battery-percent-display-outside); color: var(--battery-percent-color); }
 
-        .notification-center { position: absolute; top: 0; left: 0; right: 0; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); z-index: 1005; transform: translateY(-100%); transition: transform 0.3s ease-out; padding: 40px 10px 10px; box-sizing: border-box; overflow-y: auto; }
+        /* ★★★ 优化：通知栏 ★★★ */
+        .notification-center {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1005;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
         .notification-center.visible { transform: translateY(0); }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px 10px;
+            flex-shrink: 0;
+        }
+        .notification-header h3 { color: white; margin: 0; font-size: 18px; }
+        .notification-header .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        #notification-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
         .notification-item { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 10px; margin-bottom: 10px; color: white; display: flex; align-items: center; gap: 10px; }
         .notification-item .app-icon { width: 24px; height: 24px; border-radius: 6px; }
         .notification-item .content .title { font-weight: bold; font-size: 14px; }
         .notification-item .content .text { font-size: 13px; margin-top: 4px; }
+        .notification-footer {
+            padding: 15px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .clear-all-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
         .notch-container { display: none; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 190px; height: 28px; background: #000; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 101; }
         body.notch-mode .notch-container { display: block; }
         
-        /* ★★★ 灵动岛 (更新) ★★★ */
-        #dynamic-island { display: none; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); background: #000; border-radius: 20px; z-index: 101; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); color: white; overflow: hidden; }
-        body.island-mode #dynamic-island { display: flex; justify-content: center; align-items: center; width: 120px; height: 36px; }
-        #dynamic-island.active { width: 300px; height: 70px; }
-        #dynamic-island.music-mode { width: 220px; height: 60px; padding: 0 15px; }
-        .island-content { display: none; align-items: center; gap: 10px; height: 100%; box-sizing: border-box; padding: 8px 15px; opacity: 0; transform: scale(0.8); transition: opacity 0.3s ease-out 0.2s, transform 0.3s ease-out 0.2s; }
-        #dynamic-island.active .island-content.notification { display: flex; opacity: 1; transform: scale(1); }
-        #dynamic-island.music-mode .island-content.music { display: flex; opacity: 1; transform: scale(1); width: 100%; justify-content: space-between; }
+        /* ★★★ 优化：灵动岛交互 ★★★ */
+        #dynamic-island {
+            display: none;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            border-radius: 20px;
+            z-index: 101;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            color: white;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        body.island-mode #dynamic-island {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 120px;
+            height: 36px;
+        }
+        #dynamic-island.music-mode {
+            width: 220px;
+            height: 60px;
+            padding: 0 15px;
+        }
+        .island-content {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 8px 15px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease-out 0.2s, transform 0.3s ease-out 0.2s;
+        }
+        #dynamic-island.music-mode .island-content.music {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+            width: 100%;
+            justify-content: space-between;
+        }
         .island-content .app-icon { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
         .island-content .text-content { overflow: hidden; }
         .island-content .title { font-weight: bold; font-size: 14px; white-space: nowrap; }
@@ -610,6 +737,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             z-index: 1000;
+            cursor: pointer;
         }
         body.island-v2-mode #ios-dynamic-island { display: flex; }
         #ios-dynamic-island.island-expanded { width: 220px; height: 60px; }
@@ -1008,14 +1136,6 @@
         .widget-location span { font-size: 14px; font-weight: 500; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 5px; }
 
 
-        /* --- 激活弹窗 --- */
-        #activation-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .activation-content { background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%); padding: 30px; border-radius: 20px; width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .activation-content .cake-icon { width: 80px; height: 80px; margin-bottom: 20px; }
-        .activation-content h3 { margin: 0 0 15px; color: #333; }
-        .activation-input { width: 100%; padding: 12px; border: 1px solid #FFB6C1; border-radius: 10px; text-align: center; font-size: 18px; text-transform: uppercase; box-sizing: border-box; }
-        .activation-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #FF69B4; color: white; font-size: 16px; cursor: pointer; margin-top: 20px; }
-
         /* --- 聊天气泡分离样式 --- */
         .message-bubble { position: relative; padding: 10px 14px; font-size: var(--font-size-base); line-height: 1.4; max-width: calc(var(--phone-width) - 120px); word-break: break-word; border-radius: 6px; user-select: none; color: var(--global-font-color); }
         .message-row.sent .message-bubble.text-bubble { background: #96d35f; color: #000; }
@@ -1408,7 +1528,7 @@
         .moment-comment .comment-author { color: var(--wechat-blue); font-weight: 600; }
         .switch { position: relative; display: inline-block; width: 51px; height: 31px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+ .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--wechat-green); }
         input:checked + .slider:before { transform: translateX(20px); }
@@ -1766,7 +1886,7 @@
             background: white;
         }
 
-        /* ★★★ 优化："你说我猜" 游戏样式 ★★★ */
+        /* ★★★ 优化：“你说我猜” 游戏样式 ★★★ */
         #guess-word-game-page .content-area {
             padding: 15px;
             display: flex;
@@ -2163,6 +2283,122 @@
             color: var(--global-font-color);
         }
 
+        /* ★★★ 新增：证件办理APP样式 ★★★ */
+        #certificate-app-page .content-area { padding: 0; }
+        #certificate-app-page .app-content { flex: 1; overflow-y: auto; padding: 20px; }
+        #certificate-app-page .bottom-nav { flex-shrink: 0; }
+        #certificate-app-page .form-group img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+        #certificate-app-page .certificate-display { margin-top: 20px; transform-origin: top center; }
+        
+        /* 结婚证样式 */
+        .marriage-certificate { width: 700px; height: 450px; background: #fff9f9; border-radius: 8px; box-shadow: 0 15px 40px rgba(200, 0, 0, 0.1); position: relative; overflow: hidden; border: 2px solid #d4a8a8; display: flex; margin: 20px auto; }
+        .certificate-left, .certificate-right { flex: 1; padding: 30px; position: relative; }
+        .certificate-left { border-right: 2px dashed #e8c8c8; background: linear-gradient(to right, #fff9f9 0%, #fff5f5 100%); }
+        .certificate-right { background: linear-gradient(to left, #fff9f9 0%, #fff5f5 100%); }
+        .certificate-header { text-align: center; margin-bottom: 30px; position: relative; }
+        .certificate-title { font-size: 28px; font-weight: bold; color: #c62f2f; letter-spacing: 10px; margin-right: -10px; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .certificate-subtitle { font-size: 16px; color: #b22222; margin-bottom: 5px; }
+        .certificate-number { font-size: 14px; color: #666; margin-top: 15px; }
+        .couple-photo { width: 180px; height: 130px; margin: 0 auto 25px; border: 1px solid #e0c0c0; background: #f9f0f0; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; }
+        .photo-placeholder { text-align: center; color: #cc9999; font-size: 14px; }
+        .photo-placeholder::before { content: "结婚合影"; display: block; font-size: 16px; margin-bottom: 8px; }
+        .marriage-info { margin: 25px 0; }
+        .info-grid { display: grid; grid-template-columns: 80px 1fr; gap: 15px; margin-bottom: 12px; }
+        .info-label { font-size: 15px; color: #8b4513; text-align: right; }
+        .info-value { font-size: 16px; color: #333; border-bottom: 1px dotted #d4a8a8; padding-bottom: 3px; }
+        .official-stamp { position: absolute; bottom: 30px; right: 30px; width: 120px; height: 120px; border: 2px solid #c62f2f; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0.9; }
+        .stamp-content { text-align: center; transform: rotate(-15deg); color: #c62f2f; font-size: 16px; font-weight: bold; }
+        .stamp-content .stamp-text { display: block; font-size: 18px; margin-bottom: 5px; }
+        .stamp-content .stamp-authority { display: block; font-size: 14px; margin-top: 5px; }
+        .marriage-vows { margin: 25px 0; line-height: 1.8; font-size: 15px; color: #333; text-indent: 2em; text-align: justify; }
+        .registration-date { text-align: center; margin: 30px 0; font-size: 15px; color: #333; }
+        .legal-provisions { font-size: 13px; color: #666; line-height: 1.6; margin-top: 20px; border-top: 1px solid #e8c8c8; padding-top: 15px; }
+        .decoration-corner { position: absolute; width: 60px; height: 60px; opacity: 0.1; }
+        .corner-tl { top: 15px; left: 15px; border-top: 3px solid #c62f2f; border-left: 3px solid #c62f2f; }
+        .corner-tr { top: 15px; right: 15px; border-top: 3px solid #c62f2f; border-right: 3px solid #c62f2f; }
+        .corner-bl { bottom: 15px; left: 15px; border-bottom: 3px solid #c62f2f; border-left: 3px solid #c62f2f; }
+        .corner-br { bottom: 15px; right: 15px; border-bottom: 3px solid #c62f2f; border-right: 3px solid #c62f2f; }
+        .heart-decoration { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; color: rgba(198, 47, 47, 0.1); z-index: 0; }
+
+        /* 身份证样式 */
+        .id-card { width: 320px; height: 202px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); padding: 12px; position: relative; overflow: hidden; border: 1px solid #e0e0e0; margin: 20px auto; }
+        .id-card::before { content: ""; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: linear-gradient(45deg, #ffffff 0%, rgba(255,255,255,0) 100%); z-index: 1; }
+        .id-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; position: relative; z-index: 2; }
+        .id-title { font-size: 16px; font-weight: bold; color: #2c3e50; letter-spacing: 2px; }
+        .id-logo { font-size: 14px; color: #7f8c8d; }
+        .id-content { display: flex; position: relative; z-index: 2; }
+        .id-photo { width: 98px; height: 122px; background-color: #dce1e6; border: 1px solid #bdc3c7; display: flex; align-items: center; justify-content: center; margin-right: 12px; position: relative; background-size: cover; background-position: center; }
+        .id-photo-placeholder { color: #7f8c8d; font-size: 12px; text-align: center; }
+        .id-info { flex: 1; }
+        .id-info .info-item { margin-bottom: 6px; display: flex; }
+        .id-info .info-label { width: 70px; font-size: 12px; color: #34495e; }
+        .id-info .info-value { font-size: 12px; color: #2c3e50; font-weight: 500; flex: 1; }
+        .id-footer { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 10px; color: #7f8c8d; z-index: 2; }
+        .id-number { letter-spacing: 1px; font-weight: bold; color: #2c3e50; }
+        .id-stamp { position: absolute; bottom: 25px; right: 15px; width: 60px; height: 60px; border: 1px solid #e74c3c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #e74c3c; font-size: 12px; transform: rotate(-15deg); opacity: 0.7; z-index: 2; }
+        .id-bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; z-index: 1; background-image: radial-gradient(circle at 10% 20%, #2c3e50 0%, #2c3e50 20%, transparent 20%), radial-gradient(circle at 90% 80%, #2c3e50 0%, #2c3e50 20%, transparent 20%); background-size: 40px 40px; }
+        
+        /* ★★★ 优化：对方余额APP样式 ★★★ */
+        #char-balance-app-page .balance-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        #char-balance-app-page .balance-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        #char-balance-app-page .balance-header .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        #char-balance-app-page .balance-header .name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        #char-balance-app-page .balance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: center;
+        }
+        #char-balance-app-page .balance-item {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        #char-balance-app-page .balance-item .title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        #char-balance-app-page .balance-item .amount {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+        #char-balance-app-page .transactions-list .list-item {
+            background: transparent;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        #char-balance-app-page .transactions-list .list-item:last-child {
+            border-bottom: none;
+        }
+        #char-balance-app-page .transactions-list .amount {
+            color: var(--wechat-red);
+            font-weight: 500;
+        }
+        body.dark-mode #char-balance-app-page .balance-card { background: #1E1E1E; }
+        body.dark-mode #char-balance-app-page .balance-item { background: #2c2c2c; }
+        body.dark-mode #char-balance-app-page .balance-item .title { color: #8E8E93; }
+        body.dark-mode #char-balance-app-page .balance-item .amount { color: #EAEAEA; }
+        body.dark-mode #char-balance-app-page .transactions-list .list-item { border-bottom-color: #3A3A3C; }
+
 
         /* 通用UI图标样式 */
         .ui-icon {
@@ -2205,28 +2441,25 @@
     </style>
 </head>
 <body>
-    <!-- 激活弹窗 -->
-    <div id="activation-modal">
-        <div class="activation-content">
-            <img src="https://img.js.design/assets/img/6654764b736e49989d348888.png" alt="Cake Icon" class="cake-icon">
-            <h3>激活 X.- Evol </h3>
-            <input type="text" id="activation-input" class="activation-input" placeholder="请输入激活码">
-            <button class="activation-btn" id="activation-btn">激活</button>
+    <!-- ★★★ 优化：激活弹窗 ★★★ -->
+    <div id="activation-modal" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-icon"></div>
+            <h3>激活 X-Evol</h3>
+            <input type="text" id="activation-input" placeholder="请输入激活码">
+            <button id="activation-btn">激活</button>
         </div>
     </div>
 
-    <!-- 加载动画 -->
-    <div id="loading-screen" style="display: none;">
-        <div class="loading-content">
-            <div class="loading-text-top-left">激活成功……正在加载中……</div>
-            <div class="loading-text-center">欢迎使用X-Evol</div>
+    <!-- ★★★ 优化：加载动画弹窗 ★★★ -->
+    <div id="loading-screen" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
             <div class="loading-spinner"></div>
+            <p class="loading-text">欢迎使用 X-Evol</p>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="loading-progress-bar"></div>
             </div>
-            <div class="loading-text-bottom-right">
-                by：来自小红书📚 非悸<br>禁止二传二改
-            </div>
+            <p class="loading-subtext">by: 来自小红书📚 非悸 | 禁止二传二改</p>
         </div>
     </div>
 
@@ -2350,9 +2583,16 @@
                 </div>
             </div>
 
-            <!-- 通知中心 -->
+            <!-- ★★★ 优化：通知中心 ★★★ -->
             <div class="notification-center" id="notification-center">
+                <div class="notification-header">
+                    <h3>通知中心</h3>
+                    <button class="back-btn" onclick="toggleNotificationCenter(event)">返回</button>
+                </div>
                 <div id="notification-list"></div>
+                <div class="notification-footer">
+                    <button class="clear-all-btn" onclick="clearAllNotifications()"><i class="fas fa-times"></i></button>
+                </div>
             </div>
 
             <!-- 主屏幕 -->
@@ -2538,7 +2778,7 @@
     <script>
         // ========== 通用数据管理器 (IndexedDB) ==========
         class UniversalDataManager {
-            constructor(dbName = 'WeChatSimulatorDB_v58', storeName = 'appDataStore') { // ★★★ Version bump to 58
+            constructor(dbName = 'WeChatSimulatorDB_v59', storeName = 'appDataStore') { // ★★★ Version bump to 59
                 this.dbName = dbName;
                 this.storeName = storeName;
                 this.db = null;
@@ -2698,6 +2938,11 @@
                 currentEditingNoteId: null
             },
             notifications: [],
+            certificates: { // ★★★ 新增
+                idCards: [],
+                marriageCerts: [],
+                marriageStamp: '中华人民共和国民政部'
+            },
             settings: {
                 api: { 
                     provider: 'openai', endpoint: '', key: '', model: '', 
@@ -2825,7 +3070,7 @@
                 locationP3: { enabled: true, name: '我的位置', image: 'https://source.unsplash.com/random/200x150?map' }
             },
             activeChat: { id: null, type: null },
-            version: '58.0' // ★★★ Version bump to 58
+            version: '59.0' // ★★★ Version bump to 59
         };
 
         async function loadData() {
@@ -2834,8 +3079,11 @@
                 appData = savedData ? savedData : JSON.parse(JSON.stringify(defaultAppData));
                 
                 // 功能检查防火墙: 数据迁移与验证
-                if (!appData.version || parseFloat(appData.version) < 58.0) {
+                if (!appData.version || parseFloat(appData.version) < 59.0) {
                     // ★★★ 新增迁移逻辑 ★★★
+                    if (!appData.certificates) {
+                        appData.certificates = { idCards: [], marriageCerts: [], marriageStamp: '中华人民共和国民政部' };
+                    }
                     if (!appData.settings.beautify.bubbleCss) {
                         appData.settings.beautify.bubbleCss = '';
                     }
@@ -2866,7 +3114,7 @@
                         }
                     });
                     
-                    appData.version = '58.0';
+                    appData.version = '59.0';
                     await saveData();
                 }
 
@@ -3795,7 +4043,7 @@
             };
         }
         
-        // ★★★ 优化：群聊@弹窗逻辑 ★★★
+        // ★★★ 优化：群聊渲染与@弹窗逻辑 ★★★
         function renderConversationPage(container, chatId, chatType) {
             appData.activeChat.id = chatId;
             appData.activeChat.type = chatType;
@@ -3899,10 +4147,9 @@
                 const mentionPopup = document.getElementById('mention-popup');
                 const text = input.value;
                 const atIndex = text.lastIndexOf('@');
-if (chatType === 'group' && atIndex !== -1 && (atIndex === 0 || /\s|@/.test(text[atIndex - 1]))) {
+                if (chatType === 'group' && atIndex !== -1 && (atIndex === 0 || /\s|@/.test(text[atIndex - 1]))) {
                     const searchTerm = text.substring(atIndex + 1);
                     const group = appData.groups.find(g => g.id == chatId);
-                    // Include user in the mentionable list
                     const allMentionable = [appData.user, ...group.members.filter(m => m.id !== appData.user.id)];
                     const members = allMentionable.filter(m => (m.name || m.nickname).toLowerCase().includes(searchTerm.toLowerCase()));
                     
@@ -5468,8 +5715,7 @@ if (chatType === 'group' && atIndex !== -1 && (atIndex === 0 || /\s|@/.test(text
                     </div>
                     <div class="form-group">
                         <label>预览</label>
-                        <div class="message-row received" style="justify-content: center;"><div class="message-bubble redpacket-bubble"><div class="main"><i class="fas fa-envelope icon"></i><div class="details"><span class="remark">恭喜发财</span><span class="amount" style="font-size: 14px;">查看红包</span></div></div><div class="footer">微信红包</div></div></div>
-                    </div>
+                        <div class="message-row received" style="justify-content: center;"><div class="message-bubble redpacket-bubble"><div class="main"><i class="fas fa-envelope icon"></i><div class="details"><span class="remark">恭喜发财</span><span class="amount" style="font-size: 14px;">查看红包</span></div></div></div>
                      <div class="form-group">
                         <label>示例代码 (点击复制)</label>
                         <textarea readonly onclick="this.select(); document.execCommand('copy'); showToast('已复制');" style="height: 100px; background: #f0f0f0; cursor: pointer;">${exampleCss}</textarea>
@@ -9433,41 +9679,30 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             });
         }
 
+        // ★★★ 优化：对方余额APP ★★★
         function renderCharBalanceAppPage(container) {
             if (!container) return;
             const contacts = appData.contacts;
-            if (contacts.length === 0) {
-                container.innerHTML = `
-                    <div class="wechat-header">
-                        <div class="header-left header-back-btn" onclick="goBack()"><div class="ui-icon back"></div></div>
-                        <span class="header-title">查看对方余额</span>
-                    </div>
-                    <div class="content-area" style="text-align: center; padding-top: 50px; color: var(--wechat-text-secondary);">
-                        暂无好友
-                    </div>
-                `;
-                return;
-            }
             container.innerHTML = `
                 <div class="wechat-header">
                     <div class="header-left header-back-btn" onclick="goBack()"><div class="ui-icon back"></div></div>
-                    <span class="header-title">查看对方余额</span>
+                    <span class="header-title">对方余额</span>
                 </div>
-                <div class="content-area list-view">
-                    ${contacts.map(c => `
-                        <div class="list-item" onclick="showCharBalanceDetails('${c.id}')">
-                            <img src="${c.avatar}" class="avatar">
-                            <div class="details"><span class="name">${c.name}</span></div>
-                            <i class="fas fa-chevron-right chevron"></i>
-                        </div>
-                    `).join('')}
+                <div class="content-area" id="char-balance-content">
+                    <div class="loader-container"><div class="loader"></div></div>
                 </div>
             `;
+            if (contacts.length > 0) {
+                showCharBalanceDetails(contacts[0].id); // 默认显示第一个好友
+            } else {
+                document.getElementById('char-balance-content').innerHTML = '<p style="text-align:center; padding:50px; color:var(--wechat-text-secondary);">暂无好友</p>';
+            }
         }
 
         async function showCharBalanceDetails(charId) {
-            const modalId = 'char-balance-details-modal';
-            showModal(modalId, `<div class="modal-content"><div class="loader-container"><div class="loader"></div></div></div>`);
+            const container = document.getElementById('char-balance-content');
+            if (!container) return;
+            container.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
             
             const contact = appData.contacts.find(c => c.id == charId);
             try {
@@ -9478,7 +9713,8 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                   "alipay_balance": "支付宝余额(数字)",
                   "recent_expenses": [
                     {"item": "支出项目1", "amount": "金额(数字)", "date": "YYYY-MM-DD"},
-                    {"item": "支出项目2", "amount": "金额(数字)", "date": "YYYY-MM-DD"}
+                    {"item": "支出项目2", "amount": "金额(数字)", "date": "YYYY-MM-DD"},
+                    {"item": "支出项目3", "amount": "金额(数字)", "date": "YYYY-MM-DD"}
                   ]
                 }`;
                 const balanceDataStr = (await getAiReply(charId, 'wechat', prompt))[0];
@@ -9493,32 +9729,45 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     throw new Error("API返回的数据格式错误，无法解析。");
                 }
 
-                const modalContent = `
-                    <div class="modal-content" style="width: 90%; max-width: 340px;">
-                        <div class="modal-title">${contact.name}的余额</div>
-                        <div class="list-view" style="background: transparent;">
-                            <div class="list-item"><span>银行卡余额:</span><span class="info">${formatCurrency(balanceData.bank_balance, 'CNY')}</span></div>
-                            <div class="list-item"><span>钱包余额:</span><span class="info">${formatCurrency(balanceData.wallet_balance, 'CNY')}</span></div>
-                            <div class="list-item"><span>支付宝余额:</span><span class="info">${formatCurrency(balanceData.alipay_balance, 'CNY')}</span></div>
+                const contentHtml = `
+                    <div class="balance-card">
+                        <div class="balance-header">
+                            <img src="${contact.avatar}" class="avatar">
+                            <span class="name">${contact.name}</span>
                         </div>
-                        <h3 style="margin-top: 20px;">最近开销记录</h3>
-                        <div class="list-view" style="max-height: 150px; overflow-y: auto; background: transparent;">
+                        <div class="balance-grid">
+                            <div class="balance-item">
+                                <div class="title">银行卡余额</div>
+                                <div class="amount">${formatCurrency(balanceData.bank_balance, 'CNY')}</div>
+                            </div>
+                            <div class="balance-item">
+                                <div class="title">钱包余额</div>
+                                <div class="amount">${formatCurrency(balanceData.wallet_balance, 'CNY')}</div>
+                            </div>
+                            <div class="balance-item">
+                                <div class="title">支付宝余额</div>
+                                <div class="amount">${formatCurrency(balanceData.alipay_balance, 'CNY')}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="balance-card">
+                        <h3>最近开销</h3>
+                        <div class="list-view transactions-list">
                             ${balanceData.recent_expenses.map(item => `
                                 <div class="list-item">
                                     <div class="details">
                                         <span class="name">${item.item}</span>
                                         <p class="subtext">${item.date}</p>
                                     </div>
-                                    <div class="info" style="color: var(--wechat-red);">${formatCurrency(item.amount, 'CNY')}</div>
+                                    <div class="info amount">-${formatCurrency(item.amount, 'CNY')}</div>
                                 </div>
                             `).join('')}
                         </div>
-                        <button class="modal-btn" style="margin-top: 15px;" onclick="closeModal('${modalId}')">关闭</button>
                     </div>
                 `;
-                document.getElementById(modalId).innerHTML = modalContent;
+                container.innerHTML = contentHtml;
             } catch (e) {
-                document.getElementById(modalId).innerHTML = `<div class="modal-content"><p style="color: red; padding: 20px;">获取余额失败: ${e.message}</p><button class="modal-btn" onclick="closeModal('${modalId}')">关闭</button></div>`;
+                container.innerHTML = `<p style="color: red; padding: 20px;">获取余额失败: ${e.message}</p>`;
             }
         }
 
@@ -10260,6 +10509,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 activationModal.style.display = 'none';
                 showLoadingScreen();
             } else {
+                activationModal.style.display = 'flex';
                 const activationInput = document.getElementById('activation-input');
                 document.getElementById('activation-btn').onclick = () => {
                     if (activationInput.value.toUpperCase() === 'EVOL还是LOVE') {
@@ -10320,11 +10570,6 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             });
 
             document.getElementById('status-bar').addEventListener('click', toggleNotificationCenter);
-            document.getElementById('notification-center').addEventListener('click', (e) => {
-                if (e.target.id === 'notification-center') {
-                    toggleNotificationCenter();
-                }
-            });
             
             checkAndPostCharMoments();
             if (appData.settings.backgroundInteraction.enabled) startBackgroundInteraction();
@@ -10427,8 +10672,13 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function toggleNotificationCenter() {
+        // ★★★ 优化：通知栏交互 ★★★
+        function toggleNotificationCenter(event) {
             const nc = document.getElementById('notification-center');
+            if (event.target.closest('.back-btn') || event.target.closest('.clear-all-btn')) {
+                // 如果点击的是返回或清除按钮，则不切换显示状态，仅执行对应功能
+                return;
+            }
             nc.classList.toggle('visible');
             if (nc.classList.contains('visible')) {
                 renderNotifications();
@@ -10447,6 +10697,13 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             if (appData.settings.beautify.statusBarDisplay === 'island') {
                 showDynamicIslandNotification(notification);
             }
+        }
+
+        function clearAllNotifications() {
+            appData.notifications = [];
+            saveData();
+            renderNotifications();
+            showToast('通知已全部清除');
         }
 
         function showDynamicIslandNotification(notification) {
@@ -10493,17 +10750,16 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             const bubble = element.closest('.voice-bubble');
             if (!bubble) return;
 
+            let chat = chatType === 'group' ? appData.groups.find(g => g.id == chatId) : appData.contacts.find(c => c.id == chatId);
+            const message = chat.conversation.find(m => m.id == msgId);
+            if (!message || !message.content.text) return;
+
             if (speechSynthesis.speaking && currentSpeech && currentSpeech.text === message.content.text) {
                 speechSynthesis.cancel();
                 currentSpeech = null;
                 return;
             }
             
-            let chat = chatType === 'group' ? appData.groups.find(g => g.id == chatId) : appData.contacts.find(c => c.id == chatId);
-            const conversation = chat.conversation;
-            const message = conversation.find(m => m.id == msgId);
-            if (!message || !message.content.text) return;
-
             speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(message.content.text);
             currentSpeech = utterance;
@@ -12529,6 +12785,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             showModal(modalId, html);
         }
         
+        // ★★★ 新增：证件办理APP ★★★
         function renderCertificateAppPage(container) {
             if (!container) return;
             container.innerHTML = `
@@ -12536,14 +12793,245 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     <div class="header-left header-back-btn" onclick="goBack()"><div class="ui-icon back"></div></div>
                     <span class="header-title">证件办理</span>
                 </div>
-                <div class="content-area" style="display:flex; justify-content:center; align-items:center; color:var(--wechat-text-secondary);">
-                    <p>功能开发中...</p>
+                <div class="content-area" id="certificate-content-area"></div>
+                <div class="bottom-nav">
+                    <div class="nav-item active" onclick="switchCertificateTab('id-card')"><i class="fas fa-id-card"></i><span>身份证</span></div>
+                    <div class="nav-item" onclick="switchCertificateTab('marriage-cert')"><i class="fas fa-heart"></i><span>结婚证</span></div>
+                    <div class="nav-item" onclick="switchCertificateTab('my-certs')"><i class="fas fa-user-circle"></i><span>我的</span></div>
+                </div>
+            `;
+            switchCertificateTab('id-card');
+        }
+
+        function switchCertificateTab(tab) {
+            const contentArea = document.getElementById('certificate-content-area');
+            document.querySelectorAll('#certificate-app-page .nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`#certificate-app-page .nav-item[onclick="switchCertificateTab('${tab}')"]`).classList.add('active');
+
+            if (tab === 'id-card') {
+                renderIdCardTab(contentArea);
+            } else if (tab === 'marriage-cert') {
+                renderMarriageCertTab(contentArea);
+            } else if (tab === 'my-certs') {
+                renderMyCertsTab(contentArea);
+            }
+        }
+
+        function renderIdCardTab(container) {
+            const charOptions = appData.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            container.innerHTML = `
+                <div class="form-page" style="padding: 20px;">
+                    <h3>办理角色身份证</h3>
+                    <div class="form-group">
+                        <label>选择角色</label>
+                        <select id="cert-char-select" class="form-input">${charOptions}</select>
+                    </div>
+                    <button class="form-btn" onclick="generateIdCard()">生成身份证</button>
+                    <div id="id-card-display" class="certificate-display"></div>
                 </div>
             `;
         }
 
+        function renderMyCertsTab(container) {
+            const personaOptions = appData.user.personas.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            container.innerHTML = `
+                <div class="form-page" style="padding: 20px;">
+                    <h3>办理我的身份证</h3>
+                    <div class="form-group">
+                        <label>选择自设</label>
+                        <select id="cert-persona-select" class="form-input">${personaOptions}</select>
+                    </div>
+                    <button class="form-btn" onclick="generateIdCard('user')">生成我的身份证</button>
+                    <div id="my-id-card-display" class="certificate-display"></div>
+                </div>
+            `;
+        }
+
+        function renderMarriageCertTab(container) {
+            const charOptions = appData.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            const personaOptions = appData.user.personas.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            container.innerHTML = `
+                <div class="form-page" style="padding: 20px;">
+                    <h3>办理结婚证</h3>
+                    <div class="form-group">
+                        <label>选择你的身份 (User)</label>
+                        <select id="marriage-user-select" class="form-input">${personaOptions}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>选择你的伴侣 (Char)</label>
+                        <select id="marriage-char-select" class="form-input">${charOptions}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>结婚照</label>
+                        <input type="file" id="marriage-photo-input" class="file-input" accept="image/*">
+                        <button class="form-btn" style="background-color:#aaa;" onclick="document.getElementById('marriage-photo-input').click()">上传合影</button>
+                    </div>
+                    <div class="form-group">
+                        <label>民政局印章文字</label>
+                        <input type="text" id="marriage-stamp-input" class="form-input" value="${appData.certificates.marriageStamp}">
+                    </div>
+                    <button class="form-btn" onclick="generateMarriageCert()">生成结婚证</button>
+                    <div id="marriage-cert-display" class="certificate-display"></div>
+                </div>
+            `;
+        }
+
+        async function generateIdCard(type = 'char') {
+            const displayId = type === 'user' ? 'my-id-card-display' : 'id-card-display';
+            const displayEl = document.getElementById(displayId);
+            displayEl.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
+
+            let person, personaId;
+            if (type === 'user') {
+                personaId = document.getElementById('cert-persona-select').value;
+                person = appData.user.personas.find(p => p.id == personaId);
+            } else {
+                const charId = document.getElementById('cert-char-select').value;
+                person = appData.contacts.find(c => c.id == charId);
+            }
+
+            if (!person) {
+                displayEl.innerHTML = '<p style="color:red;">请先选择一个有效的角色或自设。</p>';
+                return;
+            }
+
+            try {
+                const prompt = `请为以下角色生成一个逼真的中国居民身份证信息。严格遵循JSON格式，不要添加任何额外解释。
+                角色信息: { "name": "${person.name}", "gender": "${person.gender}", "persona": "${person.persona || person.description}" }
+                JSON格式: { "birth_date": "YYYY年M月D日", "ethnicity": "民族", "address": "详细住址", "id_number": "18位身份证号", "issuing_authority": "签发机关", "validity_period": "YYYY.MM.DD-YYYY.MM.DD" }`;
+                
+                const idDataStr = (await getAiReply(person.id, 'wechat', prompt))[0];
+                const idData = JSON.parse(idDataStr);
+
+                const newIdCard = {
+                    id: Date.now(),
+                    ownerId: person.id,
+                    ownerType: type,
+                    ...idData,
+                    name: person.name,
+                    gender: person.gender,
+                    avatar: person.avatar
+                };
+                appData.certificates.idCards.push(newIdCard);
+                saveData();
+
+                displayEl.innerHTML = `
+                    <div class="id-card" id="id-card-${newIdCard.id}">
+                        <div class="id-bg-pattern"></div>
+                        <div class="id-header"><div class="id-title">居民身份证</div><div class="id-logo">PRC ID</div></div>
+                        <div class="id-content">
+                            <div class="id-photo" style="background-image: url('${person.avatar}')"></div>
+                            <div class="id-info">
+                                <div class="info-item"><div class="info-label">姓名：</div><div class="info-value">${person.name}</div></div>
+                                <div class="info-item"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[person.gender]}</div></div>
+                                <div class="info-item"><div class="info-label">民族：</div><div class="info-value">${idData.ethnicity}</div></div>
+                                <div class="info-item"><div class="info-label">出生：</div><div class="info-value">${idData.birth_date}</div></div>
+                                <div class="info-item"><div class="info-label">住址：</div><div class="info-value">${idData.address}</div></div>
+                            </div>
+                        </div>
+                        <div class="id-footer">
+                            <div class="id-number">${idData.id_number}</div>
+                            <div>公民身份号码</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById(`id-card-${newIdCard.id}`).addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    // 保存图片逻辑
+                });
+
+            } catch (e) {
+                displayEl.innerHTML = `<p style="color:red;">生成身份证失败: ${e.message}</p>`;
+            }
+        }
+
+        function generateMarriageCert() {
+            const displayEl = document.getElementById('marriage-cert-display');
+            displayEl.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
+
+            const userId = document.getElementById('marriage-user-select').value;
+            const charId = document.getElementById('marriage-char-select').value;
+            const user = appData.user.personas.find(p => p.id == userId);
+            const char = appData.contacts.find(c => c.id == charId);
+            const stampText = document.getElementById('marriage-stamp-input').value;
+            const photoInput = document.getElementById('marriage-photo-input');
+
+            const userCard = appData.certificates.idCards.find(c => c.ownerId == userId && c.ownerType === 'user');
+            const charCard = appData.certificates.idCards.find(c => c.ownerId == charId && c.ownerType === 'char');
+
+            if (!user || !char) {
+                displayEl.innerHTML = '<p style="color:red;">请选择有效的双方身份。</p>';
+                return;
+            }
+            if (!userCard || !charCard) {
+                displayEl.innerHTML = '<p style="color:red;">双方或其中一方未办理身份证，无法结婚。</p>';
+                return;
+            }
+            
+            const userAge = new Date().getFullYear() - new Date(userCard.birth_date.replace(/年|月/g, '-').replace('日', '')).getFullYear();
+            const charAge = new Date().getFullYear() - new Date(charCard.birth_date.replace(/年|月/g, '-').replace('日', '')).getFullYear();
+
+            if (userAge < 18 || charAge < 18) {
+                displayEl.innerHTML = '<p style="color:red;">双方或其中一方未满18周岁，无法结婚。</p>';
+                return;
+            }
+
+            const handlePhoto = (photoUrl) => {
+                const certNumber = `结字第 No. ${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}${String(new Date().getDate()).padStart(2,'0')}${Math.floor(Math.random()*1000).toString().padStart(4,'0')}`;
+                const registrationDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                const newCert = {
+                    id: Date.now(),
+                    user: { id: user.id, name: user.name, gender: user.gender, birthDate: userCard.birth_date, idNumber: userCard.id_number },
+                    char: { id: char.id, name: char.name, gender: char.gender, birthDate: charCard.birth_date, idNumber: charCard.id_number },
+                    photo: photoUrl,
+                    stamp: stampText,
+                    certNumber: certNumber,
+                    registrationDate: registrationDate
+                };
+                appData.certificates.marriageCerts.push(newCert);
+                saveData();
+
+                displayEl.innerHTML = `
+                    <div class="marriage-certificate" style="transform: scale(0.8);">
+                        <div class="heart-decoration">❤</div>
+                        <div class="certificate-left">
+                            <div class="certificate-header">
+                                <div class="certificate-title">结婚证</div>
+                                <div class="certificate-subtitle">MARRIAGE CERTIFICATE</div>
+                                <div class="certificate-number">${certNumber}</div>
+                            </div>
+                            <div class="couple-photo" style="background-image: url('${photoUrl}')"></div>
+                            <div class="marriage-info">
+                                <div class="info-grid"><div class="info-label">${char.gender === 'male' ? '男方' : '女方'}：</div><div class="info-value">${char.name}</div></div>
+                                <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[char.gender]}</div></div>
+                                <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${charCard.birth_date}</div></div>
+                                <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${charCard.id_number}</div></div>
+                                <div class="info-grid" style="margin-top: 20px;"><div class="info-label">${user.gender === 'female' ? '女方' : '男方'}：</div><div class="info-value">${user.name}</div></div>
+                                <div class="info-grid"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[user.gender]}</div></div>
+                                <div class="info-grid"><div class="info-label">出生：</div><div class="info-value">${userCard.birth_date}</div></div>
+                                <div class="info-grid"><div class="info-label">身份证号：</div><div class="info-value">${userCard.id_number}</div></div>
+                            </div>
+                        </div>
+                        <div class="certificate-right">
+                            <div class="marriage-vows">双方自愿申请结婚，经审查，符合《中华人民共和国民法典》关于结婚的规定，准予登记，特发此证。</div>
+                            <div class="registration-date">登记日期：${registrationDate}</div>
+                            <div class="official-stamp"><div class="stamp-content"><span class="stamp-text">婚姻登记专用章</span><span class="stamp-authority">${stampText}</span></div></div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            if (photoInput.files[0]) {
+                handleImageUpload(photoInput.files[0], handlePhoto);
+            } else {
+                handlePhoto('');
+            }
+        }
+
         // ★★★ 优化：所有灵动岛逻辑 ★★★
         function initAllDynamicIslands() {
+            initDynamicIsland();
             initIosDynamicIsland();
             initEvolDynamicIsland();
             initInsDynamicIsland();
@@ -12555,14 +13043,22 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             updateEvolDynamicIslandMusic();
             updateInsDynamicIslandMusic();
         }
+        
+        function initDynamicIsland() {
+            const island = document.getElementById('dynamic-island');
+            if (!island) return;
+            island.addEventListener('click', () => {
+                if (island.classList.contains('music-mode')) {
+                    togglePlayPause();
+                }
+            });
+        }
 
         function updateDynamicIslandMusic() {
             if (appData.settings.beautify.statusBarDisplay !== 'island') return;
             const island = document.getElementById('dynamic-island');
             const content = document.getElementById('island-music-content');
             if (!island || !content) return;
-
-            if (island.classList.contains('active')) return;
 
             if (appData.music.isPlaying && appData.music.currentSongId) {
                 const song = appData.music.library.find(s => s.id === appData.music.currentSongId);

@@ -544,9 +544,9 @@
         }
 
         /* --- 状态栏 & 通知栏 & 刘海屏/灵动岛 --- */
-        .status-bar { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; color: var(--global-font-color); font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 500; position: absolute; top: 0; left: 0; right: 0; z-index: 100; cursor: pointer; }
+        .status-bar { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; color: var(--global-font-color); font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 500; position: absolute; top: 0; left: 0; right: 0; z-index: 100; }
         body.dark-mode .status-bar, body.transparent-mode .status-bar, body.glassmorphism-mode .status-bar { color: white; }
-        .status-bar-left { display: flex; align-items: center; gap: 8px; }
+        .status-bar-left { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .status-bar-right { display: flex; align-items: center; gap: 6px; }
         .status-bar .time { font-size: 13.5px; font-weight: 600; }
         .status-bar .network-icon i, .status-bar .network-icon span { font-size: 13px; }
@@ -655,7 +655,7 @@
             font-size: 20px;
         }
 
-        .notch-container { display: none; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 190px; height: 28px; background: #000; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 101; }
+        .notch-container { display: none; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 28px; background: #000; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 101; }
         body.notch-mode .notch-container { display: block; }
         
         /* ★★★ 优化：灵动岛交互 ★★★ */
@@ -677,8 +677,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 120px;
-            height: 36px;
+            width: 100px;
+            height: 32px;
         }
         #dynamic-island.music-mode {
             width: 220px;
@@ -726,8 +726,8 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 130px;
-            height: 38px;
+            width: 110px;
+            height: 36px;
             background: #000;
             border-radius: 45px;
             align-items: center;
@@ -780,8 +780,8 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 37px;
+            width: 100px;
+            height: 35px;
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 30px;
             backdrop-filter: blur(20px);
@@ -888,15 +888,15 @@
         #evol-dynamic-island .wave-bar:nth-child(7) { animation-delay: 0.7s; }
         #evol-dynamic-island .wave-bar:nth-child(8) { animation-delay: 0.8s; }
 
-        /* ★★★ 新增：ins灵动岛样式 ★★★ */
+        /* ★★★ 新增/优化：ins灵动岛样式 ★★★ */
         #ins-dynamic-island {
             display: none;
             position: absolute;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 126px;
-            height: 37px;
+            width: 110px;
+            height: 36px;
             background-color: rgba(0, 0, 0, 0.8);
             border-radius: 40px;
             align-items: center;
@@ -945,6 +945,7 @@
             display: none;
             flex-direction: column;
             justify-content: space-between;
+            box-sizing: border-box;
         }
         #ins-dynamic-island.expanded .music-player { display: flex; }
         #ins-dynamic-island .song-info { color: white; }
@@ -1147,6 +1148,7 @@
         .message-bubble.sticker-bubble img { max-width: 120px; }
         .message-bubble.image-bubble::after, .message-bubble.sticker-bubble::after { display: none; }
         
+        /* ★★★ 优化：语音气泡样式 ★★★ */
         .message-bubble.voice-bubble { display: flex; align-items: center; gap: 8px; min-width: 80px; cursor: pointer; }
         .voice-bubble-content { display: flex; align-items: center; gap: 10px; }
         .voice-bubble-content .waveform { display: flex; align-items: center; height: 20px; overflow: hidden; }
@@ -1174,6 +1176,7 @@
         .message-row.sent .voice-bubble-content .duration { color: #000; }
         .message-row.received .voice-bubble-content .duration { color: var(--wechat-text-secondary); }
         .message-row.sent .voice-bubble-content { flex-direction: row-reverse; }
+        .message-row.received .voice-bubble-content { flex-direction: row; }
 
         /* 文件气泡优化 */
         .file-bubble {
@@ -1398,7 +1401,7 @@
         .message-content-wrapper { display: flex; flex-direction: column; position: relative; }
         .message-row.sent .message-content-wrapper { align-items: flex-end; }
         .message-row.received .message-content-wrapper { align-items: flex-start; }
-        /* ★★★ 新增：群聊头衔样式 ★★★ */
+        /* ★★★ 新增/优化：群聊头衔样式 ★★★ */
         .message-sender-name {
             font-size: 12px;
             color: var(--wechat-text-secondary);
@@ -1412,6 +1415,7 @@
             padding: 2px 5px;
             border-radius: 4px;
             color: white;
+            display: none; /* 默认隐藏 */
         }
         .group-title-badge.owner { background-color: var(--group-title-owner-color); }
         .group-title-badge.admin { background-color: var(--group-title-admin-color); }
@@ -1559,11 +1563,16 @@
         #diary-page .content-area { background-image: url('https://img.heliar.top/file/1764077275005_Screenshot_2025_1125_181250.png'); background-size: cover; padding: 25px; font-family: 'DiaryFont', serif; color: #3a2e28; line-height: 1.8; font-size: 17px; white-space: pre-wrap; }
         .delivery-search-bar { padding: 10px; }
         .delivery-search-bar input { width: 100%; padding: 10px; border-radius: 20px; border: 1px solid var(--wechat-border-color); box-sizing: border-box; }
-        .food-list, .gift-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .food-item { display: flex; flex-direction: column; background: var(--wechat-nav-bg); border-radius: 8px; overflow: hidden; cursor: pointer; }
+        /* ★★★ 优化：购物APP布局 ★★★ */
+        .food-list, .gift-grid { display: grid; gap: 10px; padding: 10px; }
+        .food-list.grid-layout, .gift-grid.grid-layout { grid-template-columns: repeat(2, 1fr); } /* 优化为2列 */
+        .food-list.list-layout, .gift-grid.list-layout { grid-template-columns: 1fr; }
+        .food-item { display: flex; flex-direction: column; background: var(--wechat-nav-bg); border-radius: 8px; overflow: hidden; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .food-list.list-layout .food-item { flex-direction: row; align-items: center; }
         .food-item img { width: 100%; height: 100px; object-fit: cover; }
+        .food-list.list-layout .food-item img { width: 80px; height: 80px; flex-shrink: 0; }
         .food-item .info { padding: 10px; flex: 1; display: flex; flex-direction: column; }
-        .food-item .name { font-weight: 500; flex: 1; }
+        .food-item .name { font-weight: 500; flex-grow: 1; }
         .food-item .price { color: var(--wechat-red); font-weight: bold; margin-top: 5px; }
         .food-item .add-btn { background: var(--wechat-green); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 20px; cursor: pointer; align-self: flex-end; }
         .bottom-nav { display: flex; border-top: 1px solid var(--wechat-border-color); background: var(--wechat-nav-bg); }
@@ -2048,7 +2057,7 @@
         #bookshelf-app-page .book-title { font-weight: 600; margin-bottom: 4px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
         #bookshelf-app-page .book-author { font-size: 12px; color: var(--bs-text-tertiary); }
         #bookshelf-app-page .book-progress { font-size: 11px; color: var(--bs-accent-blue); margin-top: 4px; }
-        #bookshelf-app-page .reader-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; margin-bottom: 20px; border-bottom: 1px solid var(--bs-border-color); }
+                #bookshelf-app-page .reader-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; margin-bottom: 20px; border-bottom: 1px solid var(--bs-border-color); }
         #bookshelf-app-page .reader-content-wrapper { 
             overflow: hidden; 
             height: calc(100% - 150px); 
@@ -2283,7 +2292,7 @@
             color: var(--global-font-color);
         }
 
-        /* ★★★ 新增：证件办理APP样式 ★★★ */
+        /* ★★★ 新增/优化：证件办理APP样式 ★★★ */
         #certificate-app-page .content-area { padding: 0; }
         #certificate-app-page .app-content { flex: 1; overflow-y: auto; padding: 20px; }
         #certificate-app-page .bottom-nav { flex-shrink: 0; }
@@ -2482,7 +2491,7 @@
         <div class="screen">
             <!-- 状态栏 -->
             <div class="status-bar" id="status-bar">
-                <div class="status-bar-left">
+                <div class="status-bar-left" id="status-bar-left-area">
                     <span class="time" id="status-bar-time">09:41</span>
                 </div>
                 <div class="notch-container"></div>
@@ -2545,7 +2554,7 @@
                         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                     </div>
                 </div>
-                <!-- ★★★ 新增ins灵动岛 ★★★ -->
+                <!-- ★★★ 新增/优化ins灵动岛 ★★★ -->
                 <div id="ins-dynamic-island">
                     <div class="island-default">
                         <div class="album-cover" id="ins-album-cover-small"><i class="fas fa-music"></i></div>
@@ -2556,7 +2565,7 @@
                             <div class="song-title" id="ins-song-title">Blinding Lights</div>
                             <div class="artist" id="ins-artist-name">The Weeknd</div>
                             <div class="wave-container" id="ins-wave-container">
-                                ${Array(10).fill('<div class="wave-bar"></div>').join('')}
+                                <!-- Wave bars will be generated by JS -->
                             </div>
                         </div>
                         <div class="progress-container">
@@ -2742,6 +2751,8 @@
             <div id="payment-code-page" class="page sub-page"></div>
             <div id="time-perception-settings-page" class="page sub-page"></div>
             <div id="read-receipt-settings-page" class="page sub-page"></div>
+            <!-- ★★★ 新增：私聊设置页面 ★★★ -->
+            <div id="private-chat-settings-page" class="page sub-page"></div>
 
 
             <!-- 模态框容器 -->
@@ -2780,7 +2791,7 @@
     <script>
         // ========== 通用数据管理器 (IndexedDB) ==========
         class UniversalDataManager {
-            constructor(dbName = 'WeChatSimulatorDB_v61', storeName = 'appDataStore') { // ★★★ Version bump to 61
+            constructor(dbName = 'WeChatSimulatorDB_v64', storeName = 'appDataStore') { // ★★★ Version bump to 64
                 this.dbName = dbName;
                 this.storeName = storeName;
                 this.db = null;
@@ -3037,6 +3048,8 @@
                 chatMode: 'online',
                 timestampStyle: 'bubble-outside',
                 backgroundInteraction: { enabled: false, interval: 3600000, selectedChars: [] },
+                privateChat: { enabled: false, triggerKeywords: '没钱了,约炮', responseDelay: 5000 }, // ★★★ 新增：私聊功能设置
+                charCanChangeGroupName: false, // ★★★ 新增：char更改群名权限
                 charLanguage: 'zh-CN',
                 notifications: {
                     send: '',
@@ -3061,7 +3074,8 @@
                 categories: {
                     gift: ['鲜花', '美妆', '珠宝', '电子产品', '奢侈品'],
                     delivery: ['中餐', '西餐', '日料', '烧烤', '奶茶甜品']
-                }
+                },
+                layout: 'grid' // ★★★ 新增：购物APP布局
             },
             longTermMemory: {},
             homeScreenWidgets: {
@@ -3072,7 +3086,7 @@
                 locationP3: { enabled: true, name: '我的位置', image: 'https://source.unsplash.com/random/200x150?map' }
             },
             activeChat: { id: null, type: null },
-            version: '61.0' // ★★★ Version bump to 61
+            version: '64.0' // ★★★ Version bump to 64
         };
 
         async function loadData() {
@@ -3081,45 +3095,16 @@
                 appData = savedData ? savedData : JSON.parse(JSON.stringify(defaultAppData));
                 
                 // 功能检查防火墙: 数据迁移与验证
-                if (!appData.version || parseFloat(appData.version) < 61.0) {
+                if (!appData.version || parseFloat(appData.version) < 64.0) {
                     // ★★★ 新增迁移逻辑 ★★★
+                    if (!appData.shopping.layout) {
+                        appData.shopping.layout = defaultAppData.shopping.layout;
+                    }
                     if (!appData.certificates) {
-                        appData.certificates = { idCards: [], marriageCerts: [], marriageStamp: '中华人民共和国民政部' };
+                        appData.certificates = defaultAppData.certificates;
                     }
-                    if (!appData.settings.beautify.bubbleCss) {
-                        appData.settings.beautify.bubbleCss = '';
-                    }
-                    if (typeof appData.settings.beautify.activeBubbleStyle === 'undefined') {
-                        appData.settings.beautify.activeBubbleStyle = 'wechat';
-                    }
-                    if (!appData.settings.memoryInterflow) {
-                        appData.settings.memoryInterflow = false;
-                    }
-                    if (!appData.settings.beautify.readReceipt) {
-                        appData.settings.beautify.readReceipt = { enabled: false, position: 'outside', userEnabled: true, charEnabled: true };
-                    } else {
-                        if (typeof appData.settings.beautify.readReceipt.userEnabled === 'undefined') {
-                            appData.settings.beautify.readReceipt.userEnabled = true;
-                        }
-                        if (typeof appData.settings.beautify.readReceipt.charEnabled === 'undefined') {
-                            appData.settings.beautify.readReceipt.charEnabled = true;
-                        }
-                    }
-                    if (!appData.games.guessWord) {
-                        appData.games.guessWord = defaultAppData.games.guessWord;
-                    }
-                    appData.groups.forEach(g => {
-                        if (!g.groupTitles) g.groupTitles = {};
-                        if (!g.levelTitles) g.levelTitles = { '0-10': '萌新', '11-20': '话痨', '21-30': '吐槽役', '31-50': '大佬', '51-80': '元老', '81-100': '活化石' };
-                        if (!g.mutedMembers) g.mutedMembers = {};
-                    });
-                    appData.contacts.forEach(c => {
-                        if (c.chatSettings && typeof c.chatSettings.heartRateMonitor !== 'undefined') {
-                            delete c.chatSettings.heartRateMonitor;
-                        }
-                    });
                     
-                    appData.version = '61.0';
+                    appData.version = '64.0';
                     await saveData();
                 }
 
@@ -3628,12 +3613,13 @@
                     const starIcon = chat.isStarred ? '<i class="fas fa-star"></i>' : '';
                     const avatarSrc = chat.type === 'group' ? (chat.avatar || 'https://img.js.design/assets/img/65a881fa383e6a42242a3f33.jpg') : chat.avatar;
                     const statusDot = chat.type === 'individual' && chat.status !== 'invisible' ? `<span class="status-dot ${chat.status}"></span>` : '';
+                    const dndIcon = chat.dnd ? '<i class="fas fa-bell-slash" style="font-size: 12px; color: var(--wechat-text-secondary); margin-left: 5px;"></i>' : '';
 
                     html += `
                         <div class="list-item" onclick="showPage('conversation-page', renderConversationPage, '${chat.id}', '${chat.type}')">
                             <img src="${avatarSrc}" class="avatar">
                             <div class="details">
-                                <span class="name">${statusDot}${displayName} ${starIcon}</span>
+                                <span class="name">${statusDot}${displayName} ${starIcon} ${dndIcon}</span>
                                 <p class="subtext">${subtext ? subtext.substring(0, 25) : '...'}</p>
                             </div>
                             <div class="info">
@@ -3769,6 +3755,11 @@
                         <span class="info">${appData.settings.backgroundInteraction.enabled ? '已开启' : '已关闭'}</span>
                         <i class="fas fa-chevron-right chevron"></i>
                     </div>
+                    <div class="list-item" onclick="showPage('private-chat-settings-page', renderPrivateChatSettingsPage)">
+                        <div class="details"><span class="name">私聊</span></div>
+                        <span class="info">${appData.settings.privateChat.enabled ? '已开启' : '已关闭'}</span>
+                        <i class="fas fa-chevron-right chevron"></i>
+                    </div>
                     <div class="list-item" onclick="showPage('time-perception-settings-page', renderTimePerceptionSettingsPage)">
                         <div class="details"><span class="name">时间感知</span></div>
                         <span class="info">${appData.settings.timePerception ? '已开启' : '已关闭'}</span>
@@ -3782,6 +3773,10 @@
                         <div class="details"><span class="name">消息免打扰</span></div>
                         <label class="switch"><input type="checkbox" id="dnd-toggle" ${appData.settings.dnd ? 'checked' : ''}><span class="slider"></span></label>
                     </div>
+                    <div class="list-item">
+                        <div class="details"><span class="name">非管理员可改群名</span><p class="subtext">允许非管理员的char强行更改群聊名称。</p></div>
+                        <label class="switch"><input type="checkbox" id="char-change-group-name-toggle" ${appData.settings.charCanChangeGroupName ? 'checked' : ''}><span class="slider"></span></label>
+                    </div>
                 </div>
             `;
             document.getElementById('dnd-toggle').onchange = e => {
@@ -3791,6 +3786,10 @@
             };
             document.getElementById('memory-interflow-toggle').onchange = e => {
                 appData.settings.memoryInterflow = e.target.checked;
+                saveData(true);
+            };
+            document.getElementById('char-change-group-name-toggle').onchange = e => {
+                appData.settings.charCanChangeGroupName = e.target.checked;
                 saveData(true);
             };
         }
@@ -4310,6 +4309,7 @@
             input.focus();
         }
 
+        // ★★★ 优化：群聊渲染逻辑 ★★★
         function renderMessages(chatId, chatType, source) {
             const containerId = 'message-area';
             const container = document.getElementById(containerId);
@@ -4411,18 +4411,28 @@
                 let readReceiptHtml = ''; // ★★★ 新增：已读回执
 
                 if (chatType === 'group' && !isSent) {
-                    const member = group.members.find(m => m.id == msg.sender);
+                    const member = chat.members.find(m => m.id == msg.sender);
                     if (member) {
-                        const memberTitle = group.groupTitles?.[member.id] || group.levelTitles?.[getMemberLevelRange(group.groupTitles?.[member.id]?.level)];
                         let titleBadge = '';
-                        if (memberTitle && memberTitle.title) {
-                            let badgeClass = 'special';
-                            if (member.id === chat.ownerId) badgeClass = 'owner';
-                            else if (chat.adminIds.includes(member.id)) badgeClass = 'admin';
-                            titleBadge = `<span class="group-title-badge ${badgeClass}">${memberTitle.title} LV.${memberTitle.level || 0}</span>`;
-                        } else {
-                            if (member.id === chat.ownerId) titleBadge = `<span class="group-title-badge owner">群主</span>`;
-                            else if (chat.adminIds.includes(member.id)) titleBadge = `<span class="group-title-badge admin">管理员</span>`;
+                        const customTitle = chat.groupTitles?.[member.id];
+                        const level = customTitle?.level || 0;
+                        const levelTitle = chat.levelTitles?.[getMemberLevelRange(level)];
+
+                        if (chat.titleDisplayMode === 'all' || chat.titleDisplayMode === 'name') {
+                            if (customTitle && customTitle.title) {
+                                let badgeClass = 'special';
+                                if (member.id === chat.ownerId) badgeClass = 'owner';
+                                else if (chat.adminIds.includes(member.id)) badgeClass = 'admin';
+                                titleBadge += `<span class="group-title-badge ${badgeClass}" style="display: inline-block;">${customTitle.title}</span>`;
+                            } else {
+                                if (member.id === chat.ownerId) titleBadge += `<span class="group-title-badge owner" style="display: inline-block;">群主</span>`;
+                                else if (chat.adminIds.includes(member.id)) titleBadge += `<span class="group-title-badge admin" style="display: inline-block;">管理员</span>`;
+                            }
+                        }
+                        if (chat.titleDisplayMode === 'all' || chat.titleDisplayMode === 'level') {
+                            if (levelTitle) {
+                                titleBadge += `<span class="group-title-badge normal" style="display: inline-block;">${levelTitle} LV.${level}</span>`;
+                            }
                         }
                         senderNameHtml = `<div class="message-sender-name">${member.name} ${titleBadge}</div>`;
                     }
@@ -6166,6 +6176,7 @@
             };
         }
         
+        // ★★★ 优化：语音输入/模拟发送 ★★★
         function showVoiceInputModal(chatId, chatType, source) {
             const modalId = 'voice-input-modal';
             const html = `
@@ -6273,7 +6284,7 @@
             reader.readAsDataURL(file);
         }
 
-        // ★★★ 优化：群聊AI逻辑 ★★★
+        // ★★★ 优化：群聊AI逻辑与私聊触发 ★★★
         async function sendMessage(chatId, chatType, content, type, source, quotedMessageId = null) {
             let chat = chatType === 'group' ? appData.groups.find(g => g.id == chatId) : appData.contacts.find(c => c.id == chatId);
             if (!chat) return;
@@ -6316,7 +6327,9 @@
             conversation.push(message);
             chat.conversation = conversation;
 
-            playNotificationSound('send');
+            if (!chat.dnd) {
+                playNotificationSound('send');
+            }
             addNotification({
                 app: source,
                 icon: appData.settings.beautify.appIcons.wechat,
@@ -6382,6 +6395,34 @@
                         }
                     }
                 }
+                
+                // ★★★ 新增：私聊触发逻辑 ★★★
+                if (appData.settings.privateChat.enabled && type === 'text') {
+                    const keywords = appData.settings.privateChat.triggerKeywords.split(/[,，]/).filter(Boolean);
+                    const messageText = content.content.toLowerCase();
+                    if (keywords.some(kw => messageText.includes(kw.toLowerCase()))) {
+                        setTimeout(() => {
+                            group.members.forEach(member => {
+                                if (member.id !== appData.user.id) {
+                                    triggerPrivateChat(member.id, messageText);
+                                }
+                            });
+                        }, appData.settings.privateChat.responseDelay);
+                    }
+                }
+            }
+        }
+
+        // ★★★ 新增：触发私聊函数 ★★★
+        async function triggerPrivateChat(charId, triggerMessage) {
+            const char = appData.contacts.find(c => c.id === charId);
+            if (!char) return;
+
+            const prompt = `你和'${appData.user.nickname}'都在一个群聊里。刚刚'${appData.user.nickname}'在群里发了这样一条消息：“${triggerMessage}”。这条消息触发了你的某些情绪或想法，让你决定立即私聊TA。请根据你的角色设定(${char.persona})，生成你私聊TA的第一条消息。`;
+            
+            const replies = await getAiReply(charId, 'wechat', prompt);
+            for (const reply of replies) {
+                await processAndSendAiReply(reply, charId, 'individual', charId, 'wechat');
             }
         }
 
@@ -6412,6 +6453,8 @@
             const giftMatch = replyText.match(/\[gift:\s*name=(.+?),\s*price=([\d.]+),\s*desc=(.*?)\]/i);
             const deliveryMatch = replyText.match(/\[delivery:\s*name=(.+?),\s*price=([\d.]+),\s*desc=(.*?)\]/i);
             const qrCodeMatch = replyText.match(/\[qrCode:(receive|appreciate|pay)\]/i);
+            const voiceMatch = replyText.match(/\[语音通话:\s*(.*?)\]/i); // ★★★ 优化：匹配语音指令
+            const changeGroupNameMatch = replyText.match(/\[changeGroupName:(.*?)\]/i);
 
             let message;
             if (transferMatch) {
@@ -6507,6 +6550,30 @@
                     saveData();
                     return;
                 }
+            } else if (voiceMatch) { // ★★★ 优化：处理char发送的语音
+                const text = voiceMatch[1].trim();
+                const duration = Math.max(1, Math.ceil(text.length / 5));
+                message = {
+                    id: Date.now() + Math.random(), sender: senderId, type: 'voice',
+                    content: { text, duration },
+                    timestamp: Date.now()
+                };
+            } else if (changeGroupNameMatch && chatType === 'group' && appData.settings.charCanChangeGroupName) {
+                const newName = changeGroupNameMatch[1].trim();
+                const char = appData.contacts.find(c => c.id == senderId);
+                if (chat && char && newName) {
+                    chat.name = newName;
+                    const systemMsg = {
+                        id: Date.now(), type: 'system',
+                        content: { content: `"${char.name}" 修改群名为 "${newName}"` },
+                        timestamp: Date.now()
+                    };
+                    conversation.push(systemMsg);
+                    if (appData.activeChat.id == chatId) {
+                        document.querySelector('#conversation-page .header-title').textContent = `${newName} (${chat.members.length})`;
+                    }
+                }
+                return; // Do not send a regular message
             } else {
                 let processedText = replyText;
                 const mentionedUsers = [];
@@ -6531,7 +6598,9 @@
                 conversation.push(message);
                 chat.conversation = conversation;
 
-                playNotificationSound('receive');
+                if (!chat.dnd) {
+                    playNotificationSound('receive');
+                }
                 addNotification({
                     app: source,
                     icon: appData.settings.beautify.appIcons.wechat,
@@ -6540,7 +6609,9 @@
                 });
 
                 await saveData();
-                renderMessages(chatId, chatType, source);
+                if (appData.activeChat.id == chatId) {
+                    renderMessages(chatId, chatType, source);
+                }
             }
         }
 
@@ -6608,6 +6679,8 @@
                             contentArray.push({ type: "image_url", image_url: { url: m.content.url } });
                             break;
                         case 'camera-sim': contentText = `[${senderName}发送了一张图片，内容是: ${m.content.description}]`; break;
+                        // ★★★ 优化：语音内容传递 ★★★
+                        case 'voice': contentText = `[${senderName}发送了一条语音，内容是: ${m.content.text}]`; break;
                         default: contentText = `[${senderName}发送了一个${m.type}]`; break;
                     }
                     
@@ -6795,6 +6868,7 @@ ${builtInStickersPrompt}
    - 模拟拍摄：[camera-sim:你想发送的图片描述]
    - 送礼物/点外卖：[gift: name=礼物名, price=价格, desc=描述] 或 [delivery: name=商品名, price=价格, desc=商家]
    - 发送二维码：[qrCode:receive/appreciate/pay]
+   - 发送语音：[语音通话: 你想说的文本内容]
 3. 语言净化：彻底摒弃油腻感、霸总腔、八股文，禁用"投石子/小兽/像是在陈述事实/邪魅/邪魅一笑/邪魅笑"等表述，追求自然鲜活的口语化表达
 
 二、双模式切换机制
@@ -6820,6 +6894,7 @@ ${builtInStickersPrompt}
 1. @提及响应：当你char在群聊中被@时，必须回应。你可以用@[用户名]的格式来@群里的其他成员。
 2. 引用回复：当char你的消息在群聊中被引用时，必须回应。
 3. 独立思考：你只能扮演你自己(${contact.name})，根据自己的设定和视角进行回复。禁止代替其他角色或用户发言，禁止复读其他人的话。
+4. 更改群名：${appData.settings.charCanChangeGroupName ? '你有权限根据剧情需要强行更改群聊名称，使用格式 [changeGroupName:新群名]。' : '你没有权限更改群聊名称。'}
 
 【核心原则】
 
@@ -6846,6 +6921,28 @@ ${builtInStickersPrompt}
 
 五、朋友圈逻辑（仅在朋友圈相关prompt下触发）
 - 动态与评论生成：严格禁止任何形式的括号()（）、神态、动作、心理描写。语言风格必须与聊天核心准则一致，保持自然口语化。
+
+【语音通话核心准则】
+1. 实时性：语音通话应当尽可能接近真实的通话体验，避免长时间延迟或断断续续的情况。
+2. 清晰度：确保语音内容清晰可懂，避免背景噪音干扰。
+3. 自然流畅：语音内容应当自然流畅，避免机械化的朗读或生硬的表达。
+4. 互动性：在语音通话中，应当及时回应对方的发言，保持对话的连贯性。
+5. 情感表达：适当使用语气词和标点符号来表达情感，使对话更加生动。
+
+【发送语音的核心准则】
+1. 内容相关性：语音内容应当与当前话题相关，避免偏离主题。
+2. 简洁明了：尽量用简短的语句表达意思，避免冗长的叙述。
+3. 情感丰富：使用语气词和标点符号来增加情感表达，使语音内容更加生动。
+4. CSS渲染：语音内容应当被包裹在具有CSS样式的聊天气泡中，确保视觉效果美观。
+5. 避免纯文本：语音内容不应仅仅是纯文本，而是应当模拟真实的语音交流，包含适当的情感和语气。
+
+【群聊天核心准则】
+1. 响应性：当被@或在群聊中被引用时，必须及时回应。
+2. 群体互动：在群聊中，应当考虑所有成员的感受，避免只与个别成员互动。
+3. 话题引导：适当引导群聊话题，避免话题过于分散或偏离主题。
+4. 尊重他人：在群聊中，应当尊重每个成员的意见和感受，避免冒犯性言论。
+5. 信息共享：在群聊中，可以分享有用的信息或资源，但避免过度推销或广告。
+6. 遵守规则：遵守群聊的规则和礼仪，避免刷屏或发布无关内容。
 
 【角色关系】
 你和'${appData.user.nickname}'的关系是：${contact.relationship}。请在对话中体现这种关系。
@@ -7341,7 +7438,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             if (messagesToForward.length === 0) { showToast('没有可转发的消息。', 'error'); return; }
 
-            let targetChat = targetChatType === 'group' ? appData.groups.find(g => g.id == targetChatId) : appData.contacts.find(c => c.id == targetChatId);
+                        let targetChat = targetChatType === 'group' ? appData.groups.find(g => g.id == targetChatId) : appData.contacts.find(c => c.id == targetChatId);
             if (!targetChat) return;
 
             const forwardedMsg = {
@@ -8267,7 +8364,9 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     announcement: '',
                     mutedMembers: {},
                     groupTitles: {},
-                    levelTitles: { '0-10': '萌新', '11-20': '话痨', '21-30': '吐槽役', '31-50': '大佬', '51-80': '元老', '81-100': '活化石' }
+                    levelTitles: { '0-10': '萌新', '11-20': '话痨', '21-30': '吐槽役', '31-50': '大佬', '51-80': '元老', '81-100': '活化石' },
+                    dnd: false,
+                    titleDisplayMode: 'all'
                 };
                 appData.groups.push(newGroup);
                 saveData(true);
@@ -8326,6 +8425,10 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                         <div class="details"><span class="name">置顶聊天</span></div>
                         <label class="switch"><input type="checkbox" id="group-pin-toggle" ${group.isPinned ? 'checked' : ''}><span class="slider"></span></label>
                     </div>
+                    <div class="list-item">
+                        <div class="details"><span class="name">消息免打扰</span></div>
+                        <label class="switch"><input type="checkbox" id="group-dnd-toggle" ${group.dnd ? 'checked' : ''}><span class="slider"></span></label>
+                    </div>
                     <div class="list-divider"></div>
                     <button class="form-btn" style="background-color: #E64340; margin: 20px;" onclick="leaveGroupChat(${groupId})">退出群聊</button>
                 </div>
@@ -8333,6 +8436,10 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             document.getElementById('group-pin-toggle').onchange = (e) => {
                 group.isPinned = e.target.checked;
+                saveData();
+            };
+            document.getElementById('group-dnd-toggle').onchange = (e) => {
+                group.dnd = e.target.checked;
                 saveData();
             };
         }
@@ -9855,6 +9962,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             }
         }
 
+        // ★★★ 优化：购物APP ★★★
         function renderShoppingAppPage(container) {
             if (!container) {
                 console.error("Shopping App Firewall: Container not found.");
@@ -9900,7 +10008,12 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     <div class="wechat-header" style="flex-shrink: 0;">
                         <div class="header-left header-back-btn" onclick="closeModal('${modalId}')"><i class="fas fa-times"></i></div>
                         <span class="header-title">${titles[type]}</span>
-                        <div class="header-right" onclick="refreshApiShopItems('${type}', '${activeChatId}')"><i class="fas fa-sync-alt"></i></div>
+                        <div class="header-right" style="display:flex; gap: 15px;">
+                            <i class="fas fa-th" onclick="setShopLayout('${type}', 'grid')"></i>
+                            <i class="fas fa-list" onclick="setShopLayout('${type}', 'list')"></i>
+                            <i class="fas fa-plus" onclick="showCustomItemModal('${type}')"></i>
+                            <i class="fas fa-sync-alt" onclick="refreshApiShopItems('${type}', '${activeChatId}')"></i>
+                        </div>
                     </div>
                     <div class="wechat-tabbar" style="height: 44px; border-top: none; border-bottom: 0.5px solid var(--wechat-border-color); flex-shrink: 0;">
                         ${categoryTabs}
@@ -9909,14 +10022,49 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 </div>
             `;
             showModal(modalId, content, true);
+            setShopLayout(type, appData.shopping.layout);
             await refreshApiShopItems(type, activeChatId, categories[0]);
         }
 
-        function switchShopCategory(tabElement, type, chatId, category) {
-            const tabs = tabElement.parentElement.querySelectorAll('.tab-item');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            tabElement.classList.add('active');
-            refreshApiShopItems(type, chatId, category);
+        function setShopLayout(type, layout) {
+            appData.shopping.layout = layout;
+            const listEl = document.getElementById(`${type}-shop-list`);
+            if (listEl) {
+                listEl.classList.remove('grid-layout', 'list-layout');
+                listEl.classList.add(layout === 'grid' ? 'grid-layout' : 'list-layout');
+            }
+            saveData();
+        }
+
+        function showCustomItemModal(type) {
+            const modalId = 'custom-item-modal';
+            const html = `
+                <div class="modal-content">
+                    <div class="modal-title">自定义商品</div>
+                    <div class="form-group"><label>商品名称</label><input type="text" id="custom-item-name" class="modal-input"></div>
+                    <div class="form-group"><label>价格</label><input type="number" id="custom-item-price" class="modal-input"></div>
+                    <div class="form-group"><label>简介</label><input type="text" id="custom-item-desc" class="modal-input"></div>
+                    <div class="form-group"><label>详细简介</label><textarea id="custom-item-detail-desc" class="modal-input" rows="3"></textarea></div>
+                    <div class="modal-actions">
+                        <button class="modal-btn" onclick="closeModal('${modalId}')">返回</button>
+                        <button class="form-btn" onclick="addCustomItem('${type}')">添加并购买</button>
+                    </div>
+                </div>
+            `;
+            showModal(modalId, html);
+        }
+
+        function addCustomItem(type) {
+            const name = document.getElementById('custom-item-name').value;
+            const price = parseFloat(document.getElementById('custom-item-price').value);
+            const desc = document.getElementById('custom-item-desc').value;
+            const detailDesc = document.getElementById('custom-item-detail-desc').value;
+            if (!name || isNaN(price)) {
+                showToast('名称和价格不能为空', 'error');
+                return;
+            }
+            closeModal('custom-item-modal');
+            showItemDetailModal(type, name, price, desc, detailDesc);
         }
 
         async function refreshApiShopItems(type, chatId, category) {
@@ -9925,8 +10073,8 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             listEl.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
             
             const prompts = {
-                gift: `请严格按照'礼物名,价格,描述;...'的格式生成36个关于“${category}”分类的礼物，描述不超过20字。例如：'永恒玫瑰,520,一朵永不凋谢的玫瑰;...'.`,
-                delivery: `请严格按照'商品名,价格,描述;...'的格式生成36个关于“${category}”分类的外卖商品，描述为商家名。例如：'麻辣小龙虾,88,虾搞搞大排档;...'.`
+                gift: `请严格按照'礼物名,价格,描述;...'的格式生成35个关于“${category}”分类的礼物，描述不超过20字。例如：'永恒玫瑰,520,一朵永不凋谢的玫瑰;...'.`,
+                delivery: `请严格按照'商品名,价格,描述;...'的格式生成35个关于“${category}”分类的外卖商品，描述为商家名。例如：'麻辣小龙虾,88,虾搞搞大排档;...'.`
             };
 
             try {
@@ -9959,14 +10107,19 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
             }
         }
 
-        function showItemDetailModal(type, name, price, desc) {
+        function showItemDetailModal(type, name, price, desc, detailDesc = '') {
             const modalId = 'item-detail-modal';
             const charOptions = appData.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             const html = `
                 <div class="modal-content">
-                    <div class="modal-title">${name}</div>
+                    <div class="modal-header">
+                        <span class="close-btn" onclick="closeModal('${modalId}')"><i class="fas fa-times"></i></span>
+                        <span class="modal-title">${name}</span>
+                        <span></span>
+                    </div>
                     <img src="https://source.unsplash.com/250x150/?${type === 'gift' ? 'gift' : 'food'},${encodeURIComponent(name)}" style="width:100%; border-radius:8px; margin-bottom:15px;">
                     <p>${desc}</p>
+                    <p>${detailDesc}</p>
                     <p style="font-size:20px; font-weight:bold; color:var(--wechat-red); text-align:center;">${formatCurrency(price, appData.user.wallet.currency)}</p>
                     <div class="modal-actions" style="flex-direction:column;">
                         <div class="form-group">
@@ -10443,7 +10596,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 </div>
                 <div class="content-area form-page">
                     <div class="form-group">
-                        <label>主屏壁纸</label>
+                        <label>主屏幕壁纸</label>
                         <img src="${appData.settings.beautify.homeScreenWallpaper}" class="avatar-upload-preview" style="width: 150px; height: auto;" id="wallpaper-preview">
                         <button class="form-btn" onclick="document.getElementById('wallpaper-input').click()">选择图片</button>
                         <input type="file" id="wallpaper-input" class="file-input" accept="image/*">
@@ -10576,7 +10729,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 activationModal.style.display = 'flex';
                 const activationInput = document.getElementById('activation-input');
                 document.getElementById('activation-btn').onclick = () => {
-                    if (activationInput.value.toUpperCase() === 'EVOL还是LOVE') {
+if (activationInput.value.toUpperCase() === 'EVOL还是LOVE') {
                         localStorage.setItem('lovelyPhoneActivated', 'true');
                         activationModal.style.display = 'none';
                         showLoadingScreen();
@@ -10633,7 +10786,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                 });
             });
 
-            document.getElementById('status-bar').addEventListener('click', (e) => toggleNotificationCenter(e, false));
+            document.getElementById('status-bar-left-area').addEventListener('click', (e) => toggleNotificationCenter(e, false));
             
             checkAndPostCharMoments();
             if (appData.settings.backgroundInteraction.enabled) startBackgroundInteraction();
@@ -10678,9 +10831,9 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
                     <span class="header-title">电池设置</span>
                 </div>
                 <div class="content-area form-page">
-                    <div class="form->group">
+                    <div class="form-group">
                         <label>调整图标</label>
-                        <select id="battery-display-mode">
+                        <select id="battery-display-mode" class="form-input">
                             <option value="outside" ${batterySettings.displayMode === 'outside' ? 'selected' : ''}>电池图标外</option>
                             <option value="inside" ${batterySettings.displayMode === 'inside' ? 'selected' : ''}>电池图标内</option>
                             <option value="none" ${batterySettings.displayMode === 'none' ? 'selected' : ''}>不显示数字</option>
@@ -10754,6 +10907,9 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
         function addNotification(notification) {
             if (appData.settings.dnd) return;
+            const chat = notification.chatId ? (appData.groups.find(g => g.id == notification.chatId) || appData.contacts.find(c => c.id == notification.chatId)) : null;
+            if (chat && chat.dnd) return; // ★★★ 新增：群聊免打扰判断
+
             appData.notifications.unshift({ ...notification, id: Date.now(), read: false });
             if (appData.notifications.length > 50) {
                 appData.notifications.pop();
@@ -11461,6 +11617,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             const overlay = document.createElement('div');
             overlay.id = overlayId;
+            overlay.className = 'popup-overlay';
             overlay.innerHTML = `
                 <div class="payment-password-modal">
                     <div class="modal-header">
@@ -11521,6 +11678,7 @@ ${isOfflineMode ? '当前为线下剧情模式，请生成一段2000-8000字的�
 
             const overlay = document.createElement('div');
             overlay.id = overlayId;
+            overlay.className = 'popup-overlay';
             overlay.innerHTML = `
                 <div class="payment-password-modal">
                     <div class="modal-header">
@@ -12860,7 +13018,7 @@ settings.fontFile = null;
             showModal(modalId, html);
         }
         
-        // ★★★ 新增：证件办理APP ★★★
+        // ★★★ 新增/优化：证件办理APP ★★★
         function renderCertificateAppPage(container) {
             if (!container) return;
             container.innerHTML = `
@@ -12901,7 +13059,7 @@ settings.fontFile = null;
                         <label>选择角色</label>
                         <select id="cert-char-select" class="form-input">${charOptions}</select>
                     </div>
-                    <button class="form-btn" onclick="generateIdCard('char')">生成身份证</button>
+                    <button class="form-btn" onclick="showCreateIdCardModal('char')">生成/编辑身份证</button>
                     <div id="id-card-display" class="certificate-display"></div>
                 </div>
             `;
@@ -12977,82 +13135,89 @@ settings.fontFile = null;
             `;
         }
 
-        async function generateIdCard(type = 'char', personaId = null) {
-            const displayId = type === 'user' ? 'my-id-card-display' : 'id-card-display';
-            const displayEl = document.getElementById(displayId);
-            displayEl.innerHTML = `<div class="loader-container"><div class="loader"></div></div>`;
-
-            let person;
-            let personTypeForPrompt;
-            let personIdForPrompt;
+        function showCreateIdCardModal(type, ownerId = null) {
+            const modalId = 'create-id-card-modal';
+            let person, existingCert;
 
             if (type === 'user') {
-                person = appData.user.personas.find(p => p.id == personaId);
-                personTypeForPrompt = { name: person.name, gender: person.gender, persona: person.description };
-                personIdForPrompt = person.id;
+                person = appData.user.personas.find(p => p.id == ownerId);
+                existingCert = appData.certificates.idCards.find(c => c.ownerId == ownerId && c.ownerType === 'user');
             } else {
-                const charId = document.getElementById('cert-char-select').value;
-                person = appData.contacts.find(c => c.id == charId);
-                personTypeForPrompt = { name: person.name, gender: person.gender, persona: person.persona };
-                personIdForPrompt = person.id;
+                ownerId = document.getElementById('cert-char-select').value;
+                person = appData.contacts.find(c => c.id == ownerId);
+                existingCert = appData.certificates.idCards.find(c => c.ownerId == ownerId && c.ownerType === 'char');
             }
 
-            if (!person) {
-                displayEl.innerHTML = '<p style="color:red;">请先选择一个有效的角色或自设。</p>';
-                return;
-            }
+            if (!person) { showToast('请先选择一个有效的角色或自设。', 'error'); return; }
 
-            try {
-                const prompt = `请为以下角色生成一个逼真的中国居民身份证信息。严格遵循JSON格式，不要添加任何额外解释。
-                角色信息: { "name": "${personTypeForPrompt.name}", "gender": "${personTypeForPrompt.gender}", "persona": "${personTypeForPrompt.persona}" }
-                JSON格式: { "birth_date": "YYYY年M月D日", "ethnicity": "民族", "address": "详细住址", "id_number": "18位身份证号", "issuing_authority": "签发机关", "validity_period": "YYYY.MM.DD-YYYY.MM.DD" }`;
-                
-                const idDataStr = (await getAiReply(personIdForPrompt, 'wechat', prompt))[0];
-                const idData = JSON.parse(idDataStr);
-
-                const newIdCard = {
-                    id: Date.now(),
-                    ownerId: person.id,
-                    ownerType: type,
-                    ...idData,
-                    name: person.name,
-                    gender: person.gender,
-                    avatar: person.avatar
-                };
-                appData.certificates.idCards.push(newIdCard);
-                saveData();
-
-                displayIdCard(newIdCard.id, displayId);
-
-            } catch (e) {
-                displayEl.innerHTML = `<p style="color:red;">生成身份证失败: ${e.message}</p>`;
-            }
-        }
-
-        function displayIdCard(certId, containerId = 'id-card-display') {
-            const cert = appData.certificates.idCards.find(c => c.id === certId);
-            if (!cert) return;
-            const displayEl = document.getElementById(containerId);
-            displayEl.innerHTML = `
-                <div class="id-card" id="id-card-${cert.id}">
-                    <div class="id-bg-pattern"></div>
-                    <div class="id-header"><div class="id-title">居民身份证</div><div class="id-logo">PRC ID</div></div>
-                    <div class="id-content">
-                        <div class="id-photo" style="background-image: url('${cert.avatar}')"></div>
-                        <div class="id-info">
-                            <div class="info-item"><div class="info-label">姓名：</div><div class="info-value">${cert.name}</div></div>
-                            <div class="info-item"><div class="info-label">性别：</div><div class="info-value">${{male:'男', female:'女', other:'其他'}[cert.gender]}</div></div>
-                            <div class="info-item"><div class="info-label">民族：</div><div class="info-value">${cert.ethnicity}</div></div>
-                            <div class="info-item"><div class="info-label">出生：</div><div class="info-value">${cert.birth_date}</div></div>
-                            <div class="info-item"><div class="info-label">住址：</div><div class="info-value">${cert.address}</div></div>
+            const html = `
+                <div class="modal-content" style="width: 90%; max-width: 380px;">
+                    <div class="modal-title">${existingCert ? '编辑' : '创建'} ${person.name} 的身份证</div>
+                    <div class="form-page" style="padding:0;">
+                        <div class="form-group"><label>姓名</label><input type="text" id="id-name" value="${existingCert?.name || person.name}" disabled></div>
+                        <div class="form-group"><label>性别</label><input type="text" id="id-gender" value="${{male:'男', female:'女', other:'其他'}[person.gender]}" disabled></div>
+                        <div class="form-group"><label>民族</label><input type="text" id="id-ethnicity" value="${existingCert?.ethnicity || ''}"></div>
+                        <div class="form-group"><label>出生日期</label><input type="text" id="id-birth-date" value="${existingCert?.birth_date || ''}" placeholder="YYYY年M月D日"></div>
+                        <div class="form-group"><label>住址</label><input type="text" id="id-address" value="${existingCert?.address || ''}"></div>
+                        <div class="form-group"><label>身份证号 (18位)</label><input type="text" id="id-number" value="${existingCert?.id_number || ''}" maxlength="18"></div>
+                        <div class="form-group"><label>签发机关</label><input type="text" id="id-issuing-authority" value="${existingCert?.issuing_authority || ''}"></div>
+                        <div class="form-group"><label>有效期</label><input type="text" id="id-validity-period" value="${existingCert?.validity_period || ''}" placeholder="YYYY.MM.DD-YYYY.MM.DD"></div>
+                        <div class="form-group">
+                            <label>证件照</label>
+                            <img src="${existingCert?.avatar || person.avatar}" class="avatar-upload-preview" id="id-avatar-preview" onclick="document.getElementById('id-avatar-input').click()">
+                            <input type="file" id="id-avatar-input" class="file-input" accept="image/*">
                         </div>
                     </div>
-                    <div class="id-footer">
-                        <div class="id-number">${cert.id_number}</div>
-                        <div>公民身份号码</div>
+                    <div class="modal-actions">
+                        <button class="modal-btn" onclick="closeModal('${modalId}')">取消</button>
+                        <button class="modal-btn primary" onclick="saveIdCard('${type}', ${ownerId}, ${existingCert ? existingCert.id : null})">保存</button>
                     </div>
                 </div>
             `;
+            showModal(modalId, html);
+
+            document.getElementById('id-avatar-input').onchange = e => {
+                handleImageUpload(e.target.files[0], url => {
+                    document.getElementById('id-avatar-preview').src = url;
+                });
+            };
+        }
+
+        function saveIdCard(type, ownerId, certId) {
+            const idNumber = document.getElementById('id-number').value.trim();
+            if (!/^\d{17}[\dX]$/i.test(idNumber)) {
+                showToast('请输入有效的18位身份证号。', 'error');
+                return;
+            }
+
+            const newCertData = {
+                name: document.getElementById('id-name').value,
+                gender: document.getElementById('id-gender').value === '男' ? 'male' : (document.getElementById('id-gender').value === '女' ? 'female' : 'other'),
+                ethnicity: document.getElementById('id-ethnicity').value,
+                birth_date: document.getElementById('id-birth-date').value,
+                address: document.getElementById('id-address').value,
+                id_number: idNumber.toUpperCase(),
+                issuing_authority: document.getElementById('id-issuing-authority').value,
+                validity_period: document.getElementById('id-validity-period').value,
+                avatar: document.getElementById('id-avatar-preview').src,
+                ownerId: ownerId,
+                ownerType: type
+            };
+
+            if (certId) {
+                const index = appData.certificates.idCards.findIndex(c => c.id === certId);
+                appData.certificates.idCards[index] = { ...appData.certificates.idCards[index], ...newCertData };
+            } else {
+                newCertData.id = Date.now();
+                appData.certificates.idCards.push(newCertData);
+            }
+            saveData(true);
+            closeModal('create-id-card-modal');
+            if (type === 'user') {
+                renderMyCertsTab(document.getElementById('certificate-content-area'));
+            } else {
+                displayIdCard(certId || newCertData.id, 'id-card-display');
+            }
         }
 
         function showCreateMyIdCardModal() {
@@ -13065,7 +13230,7 @@ settings.fontFile = null;
                         <label>选择自设身份</label>
                         <select id="my-id-persona-select" class="modal-input">${personaOptions}</select>
                     </div>
-                    <button class="form-btn" onclick="generateIdCard('user', document.getElementById('my-id-persona-select').value); closeModal('${modalId}');">生成</button>
+                    <button class="form-btn" onclick="showCreateIdCardModal('user', document.getElementById('my-id-persona-select').value); closeModal('${modalId}');">创建/编辑</button>
                 </div>
             `;
             showModal(modalId, html);
@@ -13300,10 +13465,13 @@ settings.fontFile = null;
             }
         }
 
-        // ★★★ 新增：ins灵动岛逻辑 ★★★
+        // ★★★ 新增/优化：ins灵动岛逻辑 ★★★
         function initInsDynamicIsland() {
             const island = document.getElementById('ins-dynamic-island');
             if (!island) return;
+
+            const waveContainer = document.getElementById('ins-wave-container');
+            waveContainer.innerHTML = Array(10).fill('<div class="wave-bar"></div>').join('');
 
             island.addEventListener('click', () => {
                 if (appData.music.isPlaying) {
@@ -13414,6 +13582,10 @@ settings.fontFile = null;
                         <div class="details"><span class="name">设置群成员等级头衔</span></div>
                         <i class="fas fa-chevron-right chevron"></i>
                     </div>
+                    <div class="list-item" onclick="showTitleDisplayModeModal(${groupId})">
+                        <div class="details"><span class="name">群头衔显示</span></div>
+                        <i class="fas fa-chevron-right chevron"></i>
+                    </div>
                 </div>
             `;
         }
@@ -13516,6 +13688,68 @@ settings.fontFile = null;
             if (level <= 50) return '31-50';
             if (level <= 80) return '51-80';
             return '81-100';
+        }
+        
+        // ★★★ 新增：群头衔显示模式 ★★★
+        function showTitleDisplayModeModal(groupId) {
+            const group = appData.groups.find(g => g.id == groupId);
+            const modalId = 'title-display-mode-modal';
+            const html = `
+                <div class="modal-content">
+                    <div class="modal-title">群头衔显示</div>
+                    <div class="list-view">
+                        <div class="list-item" onclick="setTitleDisplayMode(${groupId}, 'all')">显示全部 ${group.titleDisplayMode === 'all' ? '✔' : ''}</div>
+                        <div class="list-item" onclick="setTitleDisplayMode(${groupId}, 'name')">只显示头衔名 ${group.titleDisplayMode === 'name' ? '✔' : ''}</div>
+                        <div class="list-item" onclick="setTitleDisplayMode(${groupId}, 'level')">只显示等级 ${group.titleDisplayMode === 'level' ? '✔' : ''}</div>
+                        <div class="list-item" onclick="setTitleDisplayMode(${groupId}, 'none')">不显示 ${group.titleDisplayMode === 'none' ? '✔' : ''}</div>
+                    </div>
+                </div>
+            `;
+            showModal(modalId, html);
+        }
+
+        function setTitleDisplayMode(groupId, mode) {
+            const group = appData.groups.find(g => g.id == groupId);
+            group.titleDisplayMode = mode;
+            saveData(true);
+            closeModal('title-display-mode-modal');
+        }
+
+        // ★★★ 新增：私聊设置页面 ★★★
+        function renderPrivateChatSettingsPage(container) {
+            if (!container) return;
+            const settings = appData.settings.privateChat;
+            container.innerHTML = `
+                <div class="wechat-header">
+                    <div class="header-left header-back-btn" onclick="goBack()"><div class="ui-icon back"></div><span>设置</span></div>
+                    <span class="header-title">私聊设置</span>
+                </div>
+                <div class="content-area form-page">
+                    <div class="list-item">
+                        <div class="details"><span class="name">开启私聊</span><p class="subtext">当群聊中出现关键词时，char会自动私聊你。</p></div>
+                        <label class="switch"><input type="checkbox" id="private-chat-enabled" ${settings.enabled ? 'checked' : ''}><span class="slider"></span></label>
+                    </div>
+                    <div class="form-group">
+                        <label>触发关键词 (用逗号分隔)</label>
+                        <input type="text" id="private-chat-keywords" value="${settings.triggerKeywords}">
+                    </div>
+                    <div class="form-group">
+                        <label>响应延迟 (毫秒)</label>
+                        <input type="number" id="private-chat-delay" value="${settings.responseDelay}">
+                    </div>
+                    <button class="form-btn" onclick="savePrivateChatSettings()">保存</button>
+                </div>
+            `;
+            document.getElementById('private-chat-enabled').onchange = (e) => {
+                appData.settings.privateChat.enabled = e.target.checked;
+                saveData(true);
+            };
+        }
+
+        function savePrivateChatSettings() {
+            appData.settings.privateChat.triggerKeywords = document.getElementById('private-chat-keywords').value;
+            appData.settings.privateChat.responseDelay = parseInt(document.getElementById('private-chat-delay').value);
+            saveData(true);
         }
         
         // ★★★ 优化：已读回执设置 ★★★
